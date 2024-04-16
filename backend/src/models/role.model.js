@@ -1,23 +1,36 @@
 "use strict";
-// Importa el modulo 'mongoose' para crear la conexion a la base de datos
-import { Schema, model } from "mongoose";
+// Importar sequelize
+import { Model, DataTypes } from "sequelize";
+import { sequelize } from "../config/configDB.js";
 import ROLES from "../constants/roles.constants.js";
 
-// Crea el esquema de la coleccion 'roles'
-const roleSchema = new Schema(
+class Role extends Model {}
+
+// Definir el modelo 'Role'
+Role.init(
   {
+    // Definir la columna 'id'
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    // Definir la columna 'name'
     name: {
-      type: String,
-      enum: ROLES,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isIn: {
+          args: [ROLES],
+          msg: "El rol no es válido",
+        },
+      },
     },
   },
   {
-    versionKey: false,
-  },
+    sequelize,
+    modelName: "Role",
+    timestamps: false,
+  }
 );
-
-// Crea el modelo de datos 'Role' a partir del esquema 'roleSchema'
-const Role = model("Role", roleSchema);
-
 export default Role;

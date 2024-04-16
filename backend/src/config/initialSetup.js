@@ -2,6 +2,7 @@
 // Importa el modelo de datos 'Role'
 import Role from "../models/role.model.js";
 import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
 
 /**
  * Crea los roles por defecto en la base de datos.
@@ -12,17 +13,18 @@ import User from "../models/user.model.js";
 async function createRoles() {
   try {
     // Busca todos los roles en la base de datos
-    const count = await Role.estimatedDocumentCount();
+    const rolesExist = await Role.count();
     // Si no hay roles en la base de datos los crea
-    if (count > 0) return;
+    if (rolesExist > 0) return;
 
-    await Promise.all([
-      new Role({ name: "user" }).save(),
-      new Role({ name: "admin" }).save(),
+
+    await Role.bulkCreate([
+      { name: "admin" },
+      { name: "user" },
     ]);
     console.log("* => Roles creados exitosamente");
   } catch (error) {
-    console.error(error);
+    console.error('Error al crear roles: ', error);
   }
 }
 
@@ -34,31 +36,34 @@ async function createRoles() {
  */
 async function createUsers() {
   try {
-    const count = await User.estimatedDocumentCount();
-    if (count > 0) return;
+    // Busca todos los usuarios en la base de datos
+    const usersExist = await User.count();
+    // Si no hay usuarios en la base de datos los crea
+    if (usersExist > 0) return;
 
-    const admin = await Role.findOne({ name: "admin" });
-    const user = await Role.findOne({ name: "user" });
+    const adminRole = await Role.findOne({ where: { name: "admin" } });
+    const userRole = await Role.findOne({ where: { name: "user" } });
 
-    await Promise.all([
-      new User({
+
+    await User.bulkCreate([
+      {
         username: "user",
         email: "user@email.com",
         rut: "12345678-9",
-        password: await User.encryptPassword("user123"),
-        roles: user._id,
-      }).save(),
-      new User({
+        password: await bcrypt.hash("user123", 10),
+        roleId: userRole.id,
+      },
+      {
         username: "admin",
         email: "admin@email.com",
-        rut: "12345678-0",
-        password: await User.encryptPassword("admin123"),
-        roles: admin._id,
-      }).save(),
+        rut: "98765432-1",
+        password: await bcrypt.hash("admin123", 10),
+        roleId: adminRole.id,
+      },
     ]);
     console.log("* => Users creados exitosamente");
   } catch (error) {
-    console.error(error);
+    console.error('Error al crear usuarios: ', error);
   }
 }
 

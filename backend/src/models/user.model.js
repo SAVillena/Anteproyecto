@@ -1,54 +1,104 @@
 "use strict";
 // Import the 'mongoose' module to create the database connection
-import mongoose from "mongoose";
+import { Model, DataTypes } from "sequelize";
+import Role from "./role.model.js";
+import { sequelize } from "../config/configDB.js";
 import bcrypt from "bcryptjs";
 
-// Create the 'users' collection schema
-const userSchema = new mongoose.Schema(
+class User extends Model {
+  //metodo para verificar la contraseña
+  async validPassword(password) {
+    return await bcrypt.compare(password, this.password);
+  }
+}
+
+// Define the 'User' model
+User.init(
   {
+    // Define the 'id' column
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    // Define the 'username' column
     username: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        len: {
+          args: [4, 20],
+          msg: "El nombre de usuario debe tener entre 4 y 20 caracteres",
+        },
+      },
+    },
+    // Define the 'email' column
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: {
+          args: true,
+          msg: "El email no es válido",
+        },
+      },
+    },
+    // Define the 'password' column
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     rut: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    roles: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Role",
+      // Esta validacion creo que hay que quitarla
+      validate: {
+        is: {
+          args: /^(\d{7,8})-([\dkK])$/,
+          msg: "El rut no es válido",
+        },
       },
-    ],
+    },
+    // Define the 'role' column
+
   },
   {
-    versionKey: false,
-  },
+    sequelize,
+    modelName: "User",
+    hooks: {
+      beforeCreate: async (user, options) => {
+        try {
+        if (user.password) {
+          user.password = await bcrypt.genSalt(10).then((salt) => bcrypt.hash(user.password, salt));
+        }
+        }catch (error) {
+          console.error('Error hashing password(beforeCreate): ',error);
+        }
+      },
+      beforeUpdate: async (user, options) => {
+        try {
+          if (user.changed("password")){
+            user.password = await bcrypt.genSalt(10).then((salt) => bcrypt.hash(user.password, salt));
+          }
+        }catch (error) {
+          console.error('Error hashing password (beforeUpdate): ',error);
+        }
+      }
+    }
+  }
 );
 
-/** Encrypts the user's password */
-userSchema.statics.encryptPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
-};
-
-/** Compares the user's password */
-userSchema.statics.comparePassword = async (password, receivedPassword) => {
-  return await bcrypt.compare(password, receivedPassword);
-};
-
-/** 'User' data model */
-const User = mongoose.model("User", userSchema);
-
+// Relationship
+User.belongsTo(Role, {
+  foreignKey: {
+    name: "roleId",
+    allowNull: false,
+  },
+  onDelete: "RESTRICT",
+  onUpdate: "RESTRICT",
+});
 // Export the 'User' data model
 export default User;
