@@ -1,9 +1,3 @@
-> [!TIP]
-> Recomiendo utilizar el template, ya que les ahorrará tiempo al tener la implementación del inicio de sesión lista.
-# Template Proyecto Ingenieria de Software 👨‍💻
-
-Este template está diseñado para proporcionar a los estudiantes del curso de Ingeniería de Software una base al iniciar su proyecto, incluyendo un backend con funcionalidad de inicio de sesión y un frontend correspondiente.
-
 ## Cosas a tener en cuenta 📚
 
 Este proyecto consta de dos componentes principales:
@@ -20,4 +14,4 @@ El frontend del proyecto es la interfaz de usuario con la que interactúan los u
 
 - [Frontend](./frontend)
 
-⌨️ with ❤️ by [@camjasaez](https://github.com/camjasaez)
+template utilizado de [@camjasaez](https://github.com/camjasaez)
