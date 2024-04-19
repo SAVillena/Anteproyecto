@@ -10,15 +10,19 @@ import { handleError } from "../utils/errorHandler.js";
  */
 async function getUsers() {
   try {
-    const users = await User.find()
-      .select("-password")
-      .populate("roles")
-      .exec();
-    if (!users) return [null, "No hay usuarios"];
+    const users = await User.findAll({
+      attributes: { exclude: ['password'] }, // Exclude password field
+      include: [{
+        model: Role,
+        attributes: ['name'] // Only include the role name if necessary
+      }]
+    });
 
+    if (!users || users.length === 0) return [null, "No hay usuarios"];
     return [users, null];
   } catch (error) {
     handleError(error, "user.service -> getUsers");
+    return [null, error.message];
   }
 }
 
@@ -31,21 +35,21 @@ async function createUser(user) {
   try {
     const { username, rut, email, password, roles } = user;
 
-    const userFound = await User.findOne({ email: user.email });
+    const userFound = await User.findOne({ where: { email } });
     if (userFound) return [null, "El usuario ya existe"];
 
-    const rolesFound = await Role.find({ name: { $in: roles } });
+    const rolesFound = await Role.findAll({ where: { name: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
-    const myRole = rolesFound.map((role) => role._id);
+    
+    const hashedPassword = await User.encryptPassword(password);
 
-    const newUser = new User({
+    const newUser = await User.create({
       username,
       rut,
       email,
-      password: await User.encryptPassword(password),
-      roles: myRole,
+      password: hashedPassword,
+      roleId: rolesFound[0].id,
     });
-    await newUser.save();
 
     return [newUser, null];
   } catch (error) {

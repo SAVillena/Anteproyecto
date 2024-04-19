@@ -16,6 +16,7 @@
   "author": "Camilo saez",
   "license": "MIT",
   "dependencies": {
+    "amqplib": "^0.10.4",
     "bcryptjs": "2.4.3",
     "cookie-parser": "1.4.6",
     "cors": "2.8.5",
@@ -26,6 +27,8 @@
     "mongoose": "^8.1.0",
     "morgan": "1.10.0",
     "mysql2": "^3.9.4",
+    "pg": "^8.11.5",
+    "protobufjs": "^7.2.6",
     "sequelize": "^6.37.3"
   },
   "devDependencies": {

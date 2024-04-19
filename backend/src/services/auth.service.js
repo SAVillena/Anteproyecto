@@ -2,6 +2,8 @@
 
 /** Modelo de datos 'User' */
 import User from "../models/user.model.js";
+/** Modelo de datos 'Role' */
+import Role from "../models/role.model.js";
 /** Modulo 'jsonwebtoken' para crear tokens */
 import jwt from "jsonwebtoken";
 
@@ -19,24 +21,20 @@ async function login(user) {
   try {
     const { email, password } = user;
 
-    const userFound = await User.findOne({ email: email })
-      .populate("roles")
-      .exec();
+    const userFound = await User.findOne({ where: { email }, include:  [{ model: Role, attributes: ['name'] }]
+    });
     if (!userFound) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
 
-    const matchPassword = await User.comparePassword(
-      password,
-      userFound.password,
-    );
+    const matchPassword = await User.validPassword(password);
 
     if (!matchPassword) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
 
     const accessToken = jwt.sign(
-      { email: userFound.email, roles: userFound.roles },
+      { email: userFound.email, roles: userFound.Role.name },
       ACCESS_JWT_SECRET,
       {
         expiresIn: "1d",
@@ -65,39 +63,23 @@ async function login(user) {
  */
 async function refresh(cookies) {
   try {
-    if (!cookies.jwt) return [null, "No hay autorización"];
-    const refreshToken = cookies.jwt;
-
-    const accessToken = await jwt.verify(
-      refreshToken,
-      REFRESH_JWT_SECRET,
-      async (err, user) => {
-        if (err) return [null, "La sesion a caducado, vuelva a iniciar sesion"];
-
-        const userFound = await User.findOne({
-          email: user.email,
-        })
-          .populate("roles")
-          .exec();
-
-        if (!userFound) return [null, "No usuario no autorizado"];
-
-        const accessToken = jwt.sign(
-          { email: userFound.email, roles: userFound.roles },
-          ACCESS_JWT_SECRET,
-          {
-            expiresIn: "1d",
-          },
-        );
-
-        return [accessToken, null];
-      },
+    const decoded = jwt.verify(refreshToken, REFRESH_JWT_SECRET);
+    const userFound = await User.findOne({ where: { email: decoded.email } });
+    if (!userFound) return [null, "No usuario no autorizado"];
+  
+    const accessToken = jwt.sign(
+      { email: userFound.email, roles: userFound.Role.name },
+      ACCESS_JWT_SECRET,
+      { expiresIn: "1d" },
     );
-
-    return accessToken;
+  
+    return [accessToken, null];
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return [null, "La sesion ha caducado, vuelva a iniciar sesion"];
+    }
     handleError(error, "auth.service -> refresh");
-  }
+  }  
 }
 
 export default { login, refresh };

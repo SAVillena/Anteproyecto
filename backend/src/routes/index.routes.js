@@ -8,6 +8,9 @@ import userRoutes from "./user.routes.js";
 /** Enrutador de autenticación */
 import authRoutes from "./auth.routes.js";
 
+/** Enrutador de datos */
+import dataRoutes from "./data.routes.js";
+
 /** Middleware de autenticación */
 import authenticationMiddleware from "../middlewares/authentication.middleware.js";
 
@@ -15,9 +18,12 @@ import authenticationMiddleware from "../middlewares/authentication.middleware.j
 const router = Router();
 
 // Define las rutas para los usuarios /api/usuarios
-router.use("/users", authenticationMiddleware, userRoutes);
+router.use("/users", userRoutes);
 // Define las rutas para la autenticación /api/auth
 router.use("/auth", authRoutes);
+// Define las rutas para los datos /api/data
+router.use("/data", dataRoutes);
+
 
 // Exporta el enrutador
 export default router;
