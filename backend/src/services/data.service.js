@@ -20,9 +20,13 @@ async function getData() {
             if(msg === null) return console.log('No hay mensajes');
             console.log('Mensaje recibido: ', msg);
             const data = await loadProtoSchema();
+            if (!data) {
+                throw new Error('Error al cargar el proto');
+            }
             const message = data.decode(msg.content);
+            console.log('Mensaje decodificado: ', message);
             await Data.create(message);
-            channel.ack(msg);
+            //channel.ack(msg);
         });
     } catch (error) {
         handleError(error, 'data.service -> getData');

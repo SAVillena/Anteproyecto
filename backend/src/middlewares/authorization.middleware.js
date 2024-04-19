@@ -16,7 +16,7 @@ async function isAdmin(req, res, next) {
         req,
         res,
         401,
-        "Se requiere un rol de administrador para realizar esta acción"
+        "Se requiere inciar sesión para realizar esta acción"
       );
     }
     // Assuming 'req.user.email' holds the email of the authenticated user

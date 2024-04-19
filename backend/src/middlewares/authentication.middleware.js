@@ -26,7 +26,10 @@ const verifyJWT = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
+    console.log('Token: ', token);
+    console.log('user: ', req.user);
+    console.log('email: ', req.user.email);
+    console.log('roles: ', req.user.roles);
     jwt.verify(token, ACCESS_JWT_SECRET, (err, decoded) => {
       if (err) return respondError(req, res, 403, "No autorizado", err.message);
       console.log(req.user)

@@ -8,9 +8,9 @@ const protoPath = path.resolve(__dirname, 'DataToUser.proto');
 const loadProtoSchema = async () => {
     try {
         const root = await protobuf.load(protoPath);
-        return root.lookupType('DataToUser');
+        return root.lookupType('UserData');
     } catch (error) {
-        console.error('Error al cargar el schema protobuf: ', error);
+        console.error('Error al cargar el schema protobuf: ', error, protoPath);
         return null;
     }
 }
