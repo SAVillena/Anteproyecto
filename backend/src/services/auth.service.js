@@ -21,13 +21,17 @@ async function login(user) {
   try {
     const { email, password } = user;
 
-    const userFound = await User.findOne({ where: { email }, include:  [{ model: Role, attributes: ['name'] }]
-    });
+
+    const userFound = await User.findOne({ where: { email }, include:  [{ model: Role, attributes: ['name'] }] });
+
     if (!userFound) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
 
-    const matchPassword = await User.validPassword(password);
+
+    // Cambio aquí: usa userFound para llamar a validPassword
+    const matchPassword = await userFound.validPassword(password);
+
 
     if (!matchPassword) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
@@ -54,6 +58,7 @@ async function login(user) {
     handleError(error, "auth.service -> signIn");
   }
 }
+
 
 /**
  * Refresca el token de acceso

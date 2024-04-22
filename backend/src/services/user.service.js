@@ -33,9 +33,13 @@ async function getUsers() {
  */
 async function createUser(user) {
   try {
+    console.log("user: ",user);
     const { username, rut, email, password, roles } = user;
 
-    const userFound = await User.findOne({ where: { email } });
+
+    const userFound = await User.findOne({ where: { email: user.email } });
+    console.log("userFound: ",userFound);
+
     if (userFound) return [null, "El usuario ya existe"];
 
     const rolesFound = await Role.findAll({ where: { name: roles } });

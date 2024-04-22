@@ -10,8 +10,7 @@ import { handleError } from "../utils/errorHandler.js";
  */
 async function isAdmin(req, res, next) {
   try {
-
-    if(!req.user) {
+     if(!req.user) {
       return respondError(
         req,
         res,
@@ -19,24 +18,16 @@ async function isAdmin(req, res, next) {
         "Se requiere inciar sesión para realizar esta acción"
       );
     }
-    // Assuming 'req.user.email' holds the email of the authenticated user
-    const user = await User.findOne({
-      where: { email: req.user.email },
-      include: [{
-        model: Role,
-        attributes: ['name']
-      }]
-    });
+    console.log(req.user.email);
+    const user = await User.findOne({ where: { email: req.user.email } });
+    console.log(user.roleId);
+    const roles = await Role.findAll({ where: { id: user.roleId } });
+    for (let i = 0; i < roles.length; i++) {
+      if (roles[i].name === "admin") {
+        next();
+        return;
+      }
 
-    if (user && user.Roles.some(role => role.name === 'admin')) {
-      next();
-    } else {
-      return respondError(
-        req,
-        res,
-        401,
-        "Se requiere un rol de administrador para realizar esta acción"
-      );
     }
   } catch (error) {
     handleError(error, "authorization.middleware -> isAdmin");
