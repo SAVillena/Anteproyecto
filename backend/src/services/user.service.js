@@ -41,17 +41,16 @@ async function createUser(user) {
     console.log("userFound: ",userFound);
 
     if (userFound) return [null, "El usuario ya existe"];
-
+    console.log("roles: ",roles);
     const rolesFound = await Role.findAll({ where: { name: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
     
-    const hashedPassword = await User.encryptPassword(password);
 
     const newUser = await User.create({
       username,
       rut,
       email,
-      password: hashedPassword,
+      password,
       roleId: rolesFound[0].id,
     });
 
