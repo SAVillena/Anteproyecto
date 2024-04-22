@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message MonitoringGasEntry {
+  int32 key = 1;
+  float value = 2;
+}
+
+message UserData {
+  float lat = 1;
+  float lng = 2;
+  string serial = 3;
+  int64 ts = 4;
+  map<int32, float> monitoringGas = 5;
+}

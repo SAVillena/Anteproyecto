@@ -15,9 +15,9 @@ import authenticationMiddleware from "../middlewares/authentication.middleware.j
 const router = Router();
 
 // Define el middleware de autenticación para todas las rutas
-router.use(authenticationMiddleware);
+//router.use(authenticationMiddleware);
 // Define las rutas para los usuarios
-router.get("/", isAdmin, usuarioController.getUsers);
+router.get("/", usuarioController.getUsers);
 router.post("/", isAdmin, usuarioController.createUser);
 router.get("/:id", usuarioController.getUserById);
 router.put("/:id", isAdmin, usuarioController.updateUser);

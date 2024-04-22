@@ -1,5 +1,4 @@
 "use strict";
-// Import the 'mongoose' module to create the database connection
 import { Model, DataTypes } from "sequelize";
 import Role from "./role.model.js";
 import { sequelize } from "../config/configDB.js";
