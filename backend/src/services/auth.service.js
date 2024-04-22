@@ -21,20 +21,24 @@ async function login(user) {
   try {
     const { email, password } = user;
 
+
     const userFound = await User.findOne({ where: { email }, include:  [{ model: Role, attributes: ['name'] }] });
+
     if (!userFound) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
 
+
     // Cambio aquí: usa userFound para llamar a validPassword
     const matchPassword = await userFound.validPassword(password);
+
 
     if (!matchPassword) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
 
     const accessToken = jwt.sign(
-      { email: userFound.email, roles: userFound.roles },
+      { email: userFound.email, roles: userFound.Role.name },
       ACCESS_JWT_SECRET,
       {
         expiresIn: "1d",
@@ -64,39 +68,23 @@ async function login(user) {
  */
 async function refresh(cookies) {
   try {
-    if (!cookies.jwt) return [null, "No hay autorización"];
-    const refreshToken = cookies.jwt;
-
-    const accessToken = await jwt.verify(
-      refreshToken,
-      REFRESH_JWT_SECRET,
-      async (err, user) => {
-        if (err) return [null, "La sesion a caducado, vuelva a iniciar sesion"];
-
-        const userFound = await User.findOne({
-          email: user.email,
-        })
-          .populate("roles")
-          .exec();
-
-        if (!userFound) return [null, "No usuario no autorizado"];
-
-        const accessToken = jwt.sign(
-          { email: userFound.email, roles: userFound.roles },
-          ACCESS_JWT_SECRET,
-          {
-            expiresIn: "1d",
-          },
-        );
-
-        return [accessToken, null];
-      },
+    const decoded = jwt.verify(refreshToken, REFRESH_JWT_SECRET);
+    const userFound = await User.findOne({ where: { email: decoded.email } });
+    if (!userFound) return [null, "No usuario no autorizado"];
+  
+    const accessToken = jwt.sign(
+      { email: userFound.email, roles: userFound.Role.name },
+      ACCESS_JWT_SECRET,
+      { expiresIn: "1d" },
     );
-
-    return accessToken;
+  
+    return [accessToken, null];
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return [null, "La sesion ha caducado, vuelva a iniciar sesion"];
+    }
     handleError(error, "auth.service -> refresh");
-  }
+  }  
 }
 
 export default { login, refresh };

@@ -1,18 +1,23 @@
-"use strict";
-// Autorizacion - Comprobar el rol del usuario
 import User from "../models/user.model.js";
-import Role from "../models/role.model.js";
 import { respondError } from "../utils/resHandler.js";
 import { handleError } from "../utils/errorHandler.js";
 
 /**
- * Comprueba si el usuario es administrador
- * @param {Object} req - Objeto de petición
- * @param {Object} res - Objeto de respuesta
- * @param {Function} next - Función para continuar con la siguiente función
+ * Checks if the user is an administrator
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Function to pass control to the next middleware
  */
 async function isAdmin(req, res, next) {
   try {
+     if(!req.user) {
+      return respondError(
+        req,
+        res,
+        401,
+        "Se requiere inciar sesión para realizar esta acción"
+      );
+    }
     console.log(req.user.email);
     const user = await User.findOne({ where: { email: req.user.email } });
     console.log(user.roleId);
@@ -22,15 +27,11 @@ async function isAdmin(req, res, next) {
         next();
         return;
       }
+
     }
-    return respondError(
-      req,
-      res,
-      401,
-      "Se requiere un rol de administrador para realizar esta acción",
-    );
   } catch (error) {
     handleError(error, "authorization.middleware -> isAdmin");
+    respondError(req, res, 500, "Error de servidor interno");
   }
 }
 
