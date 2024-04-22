@@ -2,6 +2,8 @@
 
 /** Modelo de datos 'User' */
 import User from "../models/user.model.js";
+/** Modelo de datos 'Role' */
+import Role from "../models/role.model.js";
 /** Modulo 'jsonwebtoken' para crear tokens */
 import jwt from "jsonwebtoken";
 
@@ -19,26 +21,13 @@ async function login(user) {
   try {
     const { email, password } = user;
 
-<<<<<<< Updated upstream
-    const userFound = await User.findOne({ email: email })
-      .populate("roles")
-      .exec();
-=======
     const userFound = await User.findOne({ where: { email }, include:  [{ model: Role, attributes: ['name'] }] });
->>>>>>> Stashed changes
     if (!userFound) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
 
-<<<<<<< Updated upstream
-    const matchPassword = await User.comparePassword(
-      password,
-      userFound.password,
-    );
-=======
     // Cambio aquí: usa userFound para llamar a validPassword
     const matchPassword = await userFound.validPassword(password);
->>>>>>> Stashed changes
 
     if (!matchPassword) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];

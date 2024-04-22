@@ -28,20 +28,12 @@ const verifyJWT = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     jwt.verify(token, ACCESS_JWT_SECRET, (err, decoded) => {
-      console.log('token', token);
-      console.log('user', req.user);
-      console.log('email', req.email);
       if (err) return respondError(req, res, 403, "No autorizado", err.message);
-<<<<<<< Updated upstream
-      req.email = decoded.email;
-      req.roles = decoded.roles;
-=======
       console.log(req.user);
       req.user = {
         email: decoded.email,
         roles: decoded.roles,
       }
->>>>>>> Stashed changes
       next();
     });
   } catch (error) {

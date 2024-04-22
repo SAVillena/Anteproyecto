@@ -34,7 +34,7 @@ async function createUser(req, res) {
     const { body } = req;
     const { error: bodyError } = userBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
-
+    console.log("body: ", body);
     const [newUser, userError] = await UserService.createUser(body);
 
     if (userError) return respondError(req, res, 400, userError);
