@@ -35,17 +35,19 @@ async function createUser(user) {
     const userFound = await User.findOne({ where: { email: user.email } });
     console.log("userFound: ",userFound);
     if (userFound) return [null, "El usuario ya existe"];
-
+    console.log("roles: ",roles);
     const rolesFound = await Role.findAll({ where: { name: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
-    const myRole = rolesFound.map((role) => role._id);
+    //encontrar la id del rol que se le asignara al usuario
+    
+    console.log("RoleId: ",RoleId);
 
     const newUser = new User({
       username,
       rut,
       email,
-      password: await User.encryptPassword(password),
-      roles: myRole,
+      password,
+      roles: RoleId,
     });
     await newUser.save();
 
