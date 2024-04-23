@@ -6,20 +6,25 @@ class Data extends Model {}
 
 Data.init(
     {
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
         serial: {
             type: DataTypes.STRING,
-            primaryKey: true,
+            allowNull: false,
         },
-        latitude: {
+        lat: {
             type: DataTypes.FLOAT,
             allowNull: false,
         },
-        longitude: {
+        lng: {
             type: DataTypes.FLOAT,
             allowNull: false,
         },
-        ts: {
-            type: DataTypes.STRING,
+        timestamp: {
+            type: DataTypes.DATE,
             allowNull: false,
         },
         ad_2: {
@@ -27,6 +32,22 @@ Data.init(
             allowNull: false,
         },
         ad_3: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+        },
+        ad_4: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+        },
+        ad_7: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+        },
+        ad_16: {
+            type: DataTypes.FLOAT,
+            allowNull: false,
+        },
+        ad_25: {
             type: DataTypes.FLOAT,
             allowNull: false,
         },
