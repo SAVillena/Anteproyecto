@@ -15,6 +15,8 @@ import { setupDB } from "./config/configDB.js";
 // Importa el handler de errores
 import { handleFatalError, handleError } from "./utils/errorHandler.js";
 import { createRoles, createUsers } from "./config/initialSetup.js";
+import { connectMQ } from "./config/configMQ.js";
+import { consumeMessages } from "./services/rabbitMQ.service.js";
 
 /**
  * Inicia el servidor web
@@ -41,6 +43,17 @@ async function setupServer() {
     server.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
     });
+    // Conecta a RabbitMQ y consume los mensajes
+    try {
+      const channel = await connectMQ();
+      if (!channel) {
+        throw new Error("Error al conectar con RabbitMQ");
+      }
+      console.log("Conectado a RabbitMQ: ", channel);
+      consumeMessages(channel);
+    }catch (error) {
+      handleError(error, "Error al conectar con RabbitMQ");
+    }
   } catch (err) {
     handleError(err, "/server.js -> setupServer");
   }
