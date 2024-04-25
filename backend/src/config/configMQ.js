@@ -1,20 +1,29 @@
 import ampq from 'amqplib';
+import {
+    RABBITMQ_HOSTNAME,
+    RABBITMQ_PASSWORD,
+    RABBITMQ_PORT,
+    RABBITMQ_QUEUE,
+    RABBITMQ_VHOST,
+    RABBITMQ_USERNAME
+} from './configEnv.js';
 
 const connectMQ = async () => {
     try {
         const connOptions = {
             protocol: 'amqp',
-            hostname: '13.59.192.198',
-            port: 5672,
-            username: 'ChileCSX',
-            password: 'sergioprueba',
-            vhost: 'test-1'
+            hostname: RABBITMQ_HOSTNAME,
+            port: RABBITMQ_PORT,
+            username: RABBITMQ_USERNAME,
+            password: RABBITMQ_PASSWORD,
+            vhost: RABBITMQ_VHOST
         };
         const connection = await ampq.connect(connOptions);
         const channel = await connection.createChannel();
-        await channel.assertQueue('e9a4a49e982e44ff9c4fbfa6aef5c5b2', { 
-            durable: false ,
-            arguments: { 'x-max-length': 500, 'x-overflow': 'drop-head'}});
+        await channel.assertQueue(RABBITMQ_QUEUE, {
+            durable: false,
+            arguments: { 'x-max-length': 500, 'x-overflow': 'drop-head' }
+        });
         return channel;
     } catch (error) {
         console.error('Error al conectar con RabbitMQ: ', error);
