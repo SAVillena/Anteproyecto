@@ -1,5 +1,4 @@
 "use strict";
-
 import { respondSuccess, respondError } from "../utils/resHandler.js";
 import DataService from "../services/data.service.js";
 //implementar esquemas de validación
@@ -43,9 +42,23 @@ async function showData(req, res) {
   }
 }
 
+async function createData(req, res) {
+  try {
+    const [createdData, errorData] = await DataService.createData(req.body);
+    if (errorData) return respondError(req, res, 404, errorData);
+
+    respondSuccess(req, res, 201, createdData);
+  } catch (error) {
+    handleError(error, "data.controller -> createData");
+    respondError(req, res, 400, error.message);
+  }
+}
+
+
 export default {
     getData,
-    showData 
+    showData,
+    createData,
 };
  
 

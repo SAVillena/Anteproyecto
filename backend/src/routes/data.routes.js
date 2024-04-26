@@ -7,5 +7,7 @@ const router = Router();
 
 router.get("/", dataController.getData);
 router.get("/show", dataController.showData);
+router.post("/createData", dataController.createData);
+
 
 export default router;

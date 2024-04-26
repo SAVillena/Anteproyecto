@@ -1,8 +1,7 @@
+import Graphics from '../components/Graphics';
 function App() {
   return (
-    <>
-      <h1>Pagina principal</h1>
-    </>
+    <Graphics />
   );
 }
 
