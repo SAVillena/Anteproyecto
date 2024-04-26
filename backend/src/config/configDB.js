@@ -1,5 +1,3 @@
-"use strict";
-// Importa el modulo 'mongoose' para crear la conexion a la base de datos
 import { Sequelize } from 'sequelize';
 
 // Agregamos la configuracion de las variables de entorno
