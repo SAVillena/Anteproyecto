@@ -1,11 +1,13 @@
 import Data from '../models/data.model.js';
 import { loadProtoSchema } from '../utils/protoHandler.js';
+import { RABBITMQ_QUEUE } from '../config/configEnv.js';
 
 
 async function consumeMessages(channel) {
-    channel.consume('e9a4a49e982e44ff9c4fbfa6aef5c5b2', async (msg) => {
+    channel.consume(RABBITMQ_QUEUE, async (msg) => {
         if (msg === null) return console.log('No hay mensajes');
         try {
+            console.log('Mensaje recibido: ', msg);
             const data = await loadProtoSchema();
             if (!data) {
                 throw new Error('Error al cargar el proto');
