@@ -13,7 +13,7 @@ async function consumeMessages(channel) {
                 throw new Error('Error al cargar el proto');
             }
             const message = data.decode(msg.content);
-            console.log('Mensaje decodificado: ', message);
+            // console.log('Mensaje decodificado: ', message);
             await processData(message);
             channel.ack(msg);
         } catch (error) {

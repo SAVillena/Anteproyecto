@@ -1,8 +1,7 @@
 import { Sequelize } from 'sequelize';
-
-// Agregamos la configuracion de las variables de entorno
 import { DB_NAME, DB_USER, DB_PASS, DB_HOST } from "./configEnv.js";
 import { handleError } from "../utils/errorHandler.js";
+
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   host: DB_HOST,
@@ -16,18 +15,11 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   },
 });
 
-/**
- * Establece la conexión con la base de datos.
- * @async
- * @function setupDB
- * @throws {Error} Si no se puede conectar a la base de datos.
- * @returns {Promise<void>} Una promesa que se resuelve cuando se establece la conexión con la base de datos.
- */
-
 async function setupDB() {
   try {
     await sequelize.authenticate();
     console.log("=> Conectado a la base de datos");
+    // await sequelize.sync({force: true}); // Descomentar para forzar la creación de tablas
     await sequelize.sync();
   } catch (err) {
     handleError(err, "/configDB.js -> setupDB");

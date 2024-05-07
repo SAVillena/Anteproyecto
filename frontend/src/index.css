@@ -17,3 +17,51 @@
 a {
   text-decoration: inherit;
 }
+
+/* index.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #333; /* Puedes ajustar el color de fondo según tu preferencia */
+  color: white; /* Esto es para el texto, asegúrate de que haya suficiente contraste */
+}
+
+.navbar-logo {
+  /* Estilos para el logo o el título de tu app */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-info button {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem; /* Ajusta el padding según tus necesidades */
+  cursor: pointer;
+  background-color: #f44336; /* Puedes elegir un color diferente para el botón de cerrar sesión */
+  border: none;
+  color: white;
+  border-radius: 4px; /* Esto dará bordes redondeados al botón */
+}
+
+/* Agregar estilos adicionales que necesites para tu navbar */
+.container {
+  display: flex;
+}
+
+.section {
+  flex: 1;
+  padding: 20px;
+}
+
+.section.left {
+  background-color: #ffffff;
+}
+
+.section.right {
+  background-color: #ffffff;
+}

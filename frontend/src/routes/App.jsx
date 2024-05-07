@@ -1,3 +1,4 @@
+import Graphics from '../components/Graphics';
 import EmbeddedPage from "../components/iframe";
 
 function App() {
@@ -5,7 +6,10 @@ function App() {
     <>
       <h1>Pagina principal</h1>
       <EmbeddedPage/>
+      <Graphics />
     </>
+
+
   );
 }
 

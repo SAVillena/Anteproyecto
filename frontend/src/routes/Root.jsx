@@ -1,34 +1,20 @@
 import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../services/auth.service';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import EmbeddedPage from '../components/iframe';
+import Navbar from '../components/NavBar';
+
 
 function Root() {
   return (
     <AuthProvider>
-      <PageRoot />
+      <Navbar />
+      <PageRoot /> 
     </AuthProvider>
   );
 }
 
-function PageRoot() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/auth');
-  };
-
-  const { user } = useAuth();
-
+function PageRoot() { 
   return (
     <div>
-      <div>
-        <h1>Aqui deberia ir un header</h1>
-        <p>Estas logeado como: {user.email}</p>
-        <button onClick={handleLogout}>Cerrar sesion</button>
-      </div>
       <Outlet />
     </div>
   );
