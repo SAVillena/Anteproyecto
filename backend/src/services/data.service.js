@@ -7,7 +7,8 @@ import { Sequelize, Op } from 'sequelize';
  */
 async function getData() {
     try {
-        const twoHoursAgo = new Date(new Date() - 4 * 60 * 60 * 1000); // 2 horas atrás desde ahora
+        const lastTimestamp = await Data.max('timestamp');
+        const twoHoursAgo = new Date(new Date(lastTimestamp).getTime() - 2 * 60 * 60 * 1000); // 2 horas atrás desde ahora
         const attributes = [
             [Sequelize.fn('AVG', Sequelize.col('ad_2')), 'avg_ad_2'],
             [Sequelize.fn('AVG', Sequelize.col('ad_3')), 'avg_ad_3'],
@@ -39,15 +40,7 @@ async function getData() {
         };
 
         const todo = {
-            total,
-            // Si necesitas también los datos específicos, puedes hacer otra consulta findAll aquí
-        //     datos: await Data.findAll({
-        //         where: {
-        //             timestamp: {
-        //                 [Op.gte]: twoHoursAgo
-        //             }
-        //         },
-        // })
+            total
         };
 
         return [todo, null];
@@ -67,8 +60,22 @@ async function createData(dataInput) {
     }
 }
 
+async function getDataSerie() {
+    try {
+        const result = await Data.findAll({
+            attributes: ['ad_2', 'ad_3', 'timestamp'],
+            raw: true
+        });
+
+        return [result, null];
+    } catch (error) {
+        console.error('Error al mostrar los datos:', error);
+        return [null, error];
+    }
+};
 
 export default {
     getData,
     createData,
+    getDataSerie,
 };

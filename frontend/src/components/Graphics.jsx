@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { fetchData } from '../services/graphic.service.js';
+import { fetchData, fetchGraphicSerieData } from '../services/graphic.service.js';
 import ReactECharts from 'echarts-for-react';
+
 const DataComponent = () => {
   const [data, setData] = useState(null);
+  const [serieData, setSerieData] = useState({ data2: [], data3: [] });
   
   useEffect(() => {
     const loadData = async () => {
@@ -14,8 +16,26 @@ const DataComponent = () => {
         console.error('Error al cargar los datos:', error);
       }
     };
-
+    const loadSerieData = async () => {
+      try {
+        const fetchedSerieData = await fetchGraphicSerieData();
+        const data2 = fetchedSerieData.data.map((item) => [new Date(item.timestamp), item.ad_2]);
+        const data3 = fetchedSerieData.data.map((item) => [new Date(item.timestamp), item.ad_3]);
+        setSerieData({ data2, data3 });
+        
+      } catch (error) {
+        console.error('Error al cargar los datos de serie:', error);
+      }
+    };
     loadData();
+    loadSerieData().then(() => {
+      const interval = setInterval(() => {
+        loadSerieData();
+        console.log("actualizado serie");
+      }, 300000); // Cada 5 minutos
+      return () => clearInterval(interval);
+    });
+    
   }, []); // El arreglo vacío asegura que esto se ejecute solo una vez al montar
   // Renderiza tu componente basado en los datos obtenidos
   const seriesLabel = {
@@ -23,7 +43,11 @@ const DataComponent = () => {
   };
   const chartData = {
     title: {
-      text: 'Metricas PM2.5 y PM10', 
+      text: 'Metricas PM2.5 y PM10',
+      /* color de la letr */
+      textStyle: {
+        color: '#ffffff'
+      } 
     },
     tooltip: {
       trigger: 'axis',
@@ -32,7 +56,10 @@ const DataComponent = () => {
       }
     },
     legend: {
-      data: ['MIN', 'MAX', 'AVG']
+      data: ['MIN', 'MAX', 'AVG'],
+      textStyle: {
+        color: '#ffffff'
+      }
     },
     grid: {
       left: 100
@@ -71,20 +98,20 @@ const DataComponent = () => {
       {
         name: 'MIN',
         type: 'bar',
-        data: [data.min_ad_2, data.min_ad_3], //PM 2.5, PM10
+        data: data ? [data.min_ad_2, data.min_ad_3] : [0], //PM 2.5, PM10
         label: seriesLabel,
       },
       {
         name: 'AVG',
         type: 'bar',
         label: seriesLabel,
-        data: [data.avg_ad_2, data.avg_ad_3] // PM 2.5, PM10
+        data: data ? [data.avg_ad_2, data.avg_ad_3] : [0] // PM 2.5, PM10
       },
       {
         name: 'MAX',
         type: 'bar',
         label: seriesLabel,
-        data: [data.max_ad_2, data.max_ad_3] //PM 2.5, PM10
+        data: data ? [data.max_ad_2, data.max_ad_3] : [0] //PM 2.5, PM10
       },
     ]
   };
@@ -92,46 +119,66 @@ const DataComponent = () => {
 
   const serie ={
       xAxis: {
-        data: ['A', 'B', 'C', 'D', 'E']
+        type: 'time',
+        splitLine: {
+          show: false
+        }
       },
-      yAxis: {},
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        scale: true,
+        // min: [data.min_ad_2],
+        // max: [data.max_ad_3]
+      },
       series: [
         {
-          data: [10, 22, 28, 43, 49],
+          data: serieData.data2, //Aca va la data2 (serieData) de PM2.5 (ad_2)
           type: 'line',
-          stack: 'x'
+          name: 'PM2.5',
+          smooth: true,
+          showsymbol: false,
         },
         {
-          data: [5, 4, 3, 5, 10],
+          data: serieData.data3, //Aca va la data3 (serieData) de PM10 (ad_3)
           type: 'line',
-          stack: 'x'
+          name: 'PM10',
+          smooth: true,
+          showsymbol: false,
         }
-      ]
+      ],
+      title: {
+        text: 'Grafico en serie, PM2.5 y PM10',
+        textStyle: {
+          color: '#ffffff'
+        }
+      },
+      legend: {
+        data: ['PM2.5', 'PM10'],
+        textStyle: {
+          color: '#ffffff'
+        }
+      },
   };
   return (
-    <><div className="container">
-    <div className="section left">
-    <ReactECharts
-      option={chartData}
-      style={{ height: '400px', width: '100%' }} // Ajusta estas dimensiones como prefieras
-      notMerge={true}
-      lazyUpdate={true}
-      theme={"theme_name"}/>
-    </div>
-    <div className="section right">
-    <ReactECharts
-      option={serie}
-      style={{ height: '400px', width: '100%' }} // Ajusta estas dimensiones como prefieras
-      notMerge={true}
-      lazyUpdate={true}
-      theme={"theme_name"}/>
-    </div>
-  </div>
-  <div>
-  </div>
-  </>
-    
+    <>
+      <div className='graphics-container'>
+        <ReactECharts
+          option={chartData}
+          style={{ height: '52%', width: '100%' }}
+          notMerge={true}
+          lazyUpdate={true}
+          theme={"theme_name"}/>
+        <ReactECharts
+          option={serie}
+          style={{ height: '52%', width: '100%' }}
+          notMerge={true}
+          lazyUpdate={true}
+          theme={"theme_name"}/>
+      </div>
+    </>
   );
+  
 };
 
 export default DataComponent;

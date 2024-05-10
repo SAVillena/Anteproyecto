@@ -15,3 +15,17 @@ export const fetchData = async () => {
       throw error; // Propagar el error para manejarlo donde se llame esta función
     }
   };
+
+  export const fetchGraphicSerieData = async () => {
+    try {
+      const response = await axios.get('data/getDataSerie');
+      const { status, data } = response;
+  
+      if (status === 200) {
+        return data;
+      }
+    } catch (error) {
+      console.error('Hubo un error al obtener los datos:', error);
+      throw error;
+    }
+  };

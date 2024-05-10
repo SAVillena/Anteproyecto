@@ -20,6 +20,13 @@ a {
 
 /* index.css */
 
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -48,20 +55,24 @@ a {
   border-radius: 4px; /* Esto dará bordes redondeados al botón */
 }
 
-/* Agregar estilos adicionales que necesites para tu navbar */
 .container {
   display: flex;
+  flex-direction: row;  /* Asegúrate de que está en fila */
+  height: 100%;         /* Ajuste de altura según necesites */
+  width: 100%;          /* Aprovecha todo el ancho disponible */
+  box-sizing: border-box;
 }
 
-.section {
-  flex: 1;
-  padding: 20px;
+.iframe-container {
+  flex: 0 0 50%;        /* No crece, no se encoge, 50% del espacio */
+  height: 100%;         /* Toma todo el alto del contenedor */
+  border: 1px solid black;
+  
 }
 
-.section.left {
-  background-color: #ffffff;
-}
-
-.section.right {
-  background-color: #ffffff;
+.graphics-container {
+  flex: 1;              /* Toma el espacio restante */
+  height: 100%;         /* Alinea la altura con el iframe */
+  width: 100%;          /* Aprovecha todo el ancho disponible */
+  flex-direction: column;
 }

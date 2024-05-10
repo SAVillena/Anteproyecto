@@ -35,22 +35,22 @@ Data.init(
             type: DataTypes.FLOAT,
             allowNull: false,
         },
-        ad_4: {
-            type: DataTypes.FLOAT,
-            allowNull: false,
-        },
-        ad_7: {
-            type: DataTypes.FLOAT,
-            allowNull: false,
-        },
-        ad_16: {
-            type: DataTypes.FLOAT,
-            allowNull: false,
-        },
-        ad_25: {
-            type: DataTypes.FLOAT,
-            allowNull: false,
-        },
+        // ad_4: {
+        //     type: DataTypes.FLOAT,
+        //     allowNull: false,
+        // },
+        // ad_7: {
+        //     type: DataTypes.FLOAT,
+        //     allowNull: false,
+        // },
+        // ad_16: {
+        //     type: DataTypes.FLOAT,
+        //     allowNull: false,
+        // },
+        // ad_25: {
+        //     type: DataTypes.FLOAT,
+        //     allowNull: false,
+        // },
     },
     {
         sequelize,

@@ -7,13 +7,13 @@ async function consumeMessages(channel) {
     channel.consume(RABBITMQ_QUEUE, async (msg) => {
         if (msg === null) return console.log('No hay mensajes');
         try {
-            console.log('Mensaje recibido: ', msg);
+            //console.log('Mensaje recibido: ', msg);
             const data = await loadProtoSchema();
             if (!data) {
                 throw new Error('Error al cargar el proto');
             }
             const message = data.decode(msg.content);
-            // console.log('Mensaje decodificado: ', message);
+            //console.log('Mensaje decodificado: ', message);
             await processData(message);
             channel.ack(msg);
         } catch (error) {
@@ -25,17 +25,19 @@ async function consumeMessages(channel) {
 async function processData(message) {
     const tsLong = message.ts;  // Suponiendo que es un objeto Long
     const date = new Date(tsLong.toNumber());
+    const pm25 = message.monitoringGas[2];
+    const pm10 = message.monitoringGas[3];
     await Data.create({
         serial: message.serial,
         lat: message.lat,
         lng: message.lng,
         timestamp: date.toISOString(),
-        ad_2: message.ad_2,
-        ad_3: message.ad_3,
-        ad_4: message.ad_4,
-        ad_7: message.ad_7,
-        ad_16: message.ad_16,
-        ad_25: message.ad_25
+        ad_2: pm25,
+        ad_3: pm10,
+        // ad_4: message.ad_4,
+        // ad_7: message.ad_7,
+        // ad_16: message.ad_16,
+        // ad_25: message.ad_25
     });
 }
 

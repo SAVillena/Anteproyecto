@@ -54,11 +54,30 @@ async function createData(req, res) {
   }
 }
 
+/**
+ * Obtiene todos los datos
+ * @param {Object} req - Objeto de petición
+ * @param {Object} res - Objeto de respuesta
+ */
+async function getDataSerie(req, res) {
+  try {
+    const [datos, errorDatos] = await DataService.getDataSerie();
+    if (errorDatos) return respondError(req, res, 404, errorDatos);
+
+    datos.length === 0
+      ? respondSuccess(req, res, 204)
+      : respondSuccess(req, res, 200, datos);
+  } catch (error) {
+    handleError(error, "data.controller -> getDataSerie");
+    respondError(req, res, 400, error.message);
+  }
+}
 
 export default {
     getData,
     showData,
     createData,
+    getDataSerie,
 };
  
 
