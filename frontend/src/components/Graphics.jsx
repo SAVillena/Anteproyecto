@@ -4,7 +4,7 @@ import ReactECharts from 'echarts-for-react';
 
 const DataComponent = () => {
   const [data, setData] = useState(null);
-  const [serieData, setSerieData] = useState({ data2: [], data3: [] });
+  const [serieData, setSerieData] = useState({ data2: [], data3: [], data_max_2: [], data_max_3: []});
   
   useEffect(() => {
     const loadData = async () => {
@@ -19,19 +19,24 @@ const DataComponent = () => {
     const loadSerieData = async () => {
       try {
         const fetchedSerieData = await fetchGraphicSerieData();
-        const data2 = fetchedSerieData.data.map((item) => [new Date(item.timestamp), item.ad_2]);
-        const data3 = fetchedSerieData.data.map((item) => [new Date(item.timestamp), item.ad_3]);
-        setSerieData({ data2, data3 });
+        console.log(fetchedSerieData);
+        const data2 = fetchedSerieData.data.data.map((item) => [new Date(item.timestamp), item.ad_2]);
+        const data3 = fetchedSerieData.data.data.map((item) => [new Date(item.timestamp), item.ad_3]);
+        const data_max_2 = fetchedSerieData.data.max_ad_2;
+        const data_max_3 = fetchedSerieData.data.max_ad_3;
+        setSerieData({ data2, data3, data_max_2, data_max_3});
         
       } catch (error) {
         console.error('Error al cargar los datos de serie:', error);
       }
     };
+
     loadData();
     loadSerieData().then(() => {
       const interval = setInterval(() => {
         loadSerieData();
-        console.log("actualizado serie");
+        loadData();
+        console.log("actualizado serie y datos");
       }, 300000); // Cada 5 minutos
       return () => clearInterval(interval);
     });
@@ -40,6 +45,14 @@ const DataComponent = () => {
   // Renderiza tu componente basado en los datos obtenidos
   const seriesLabel = {
     show: true
+  };
+
+  const maximo = () => {
+    if(serieData.data_max_2 > serieData.data_max_3){
+      return serieData.data_max_2;
+    } else {
+      return serieData.data_max_3;
+    }
   };
   const chartData = {
     title: {
@@ -128,8 +141,7 @@ const DataComponent = () => {
         type: 'value',
         boundaryGap: [0, '100%'],
         scale: true,
-        // min: [data.min_ad_2],
-        // max: [data.max_ad_3]
+        max: maximo() + 5,
       },
       series: [
         {
