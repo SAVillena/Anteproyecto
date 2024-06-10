@@ -11,10 +11,10 @@ Data.init(
             primaryKey: true,
             autoIncrement: true,
         },
-        serial: {
+        /* serial: {
             type: DataTypes.STRING,
             allowNull: false,
-        },
+        }, */
         lat: {
             type: DataTypes.FLOAT,
             allowNull: false,
@@ -58,5 +58,13 @@ Data.init(
         timestamps: true,
     },
 );
+
+Data.belongsTo(Serial, {
+    foreignKey: {
+        name: "serialId",
+        allowNull: false,
+    },
+    onDelete: "CASCADE",
+});
 
 export default Data;
