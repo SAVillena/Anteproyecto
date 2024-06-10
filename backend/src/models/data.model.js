@@ -56,9 +56,7 @@ Data.init(
         sequelize,
         modelName: "Data",
         timestamps: true,
-    }
+    },
 );
 
 export default Data;
-
-        

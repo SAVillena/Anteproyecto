@@ -5,7 +5,7 @@ import { sequelize } from "../config/configDB.js";
 import bcrypt from "bcryptjs";
 
 class User extends Model {
-  //metodo para verificar la contraseña
+  // metodo para verificar la contraseña
   async validPassword(password) {
     return await bcrypt.compare(password, this.password);
   }
@@ -73,21 +73,22 @@ User.init(
         if (user.password) {
           user.password = await bcrypt.genSalt(10).then((salt) => bcrypt.hash(user.password, salt));
         }
-        }catch (error) {
-          console.error('Error hashing password(beforeCreate): ',error);
+        } catch (error) {
+          console.error("Error hashing password(beforeCreate): ", error);
         }
       },
       beforeUpdate: async (user, options) => {
         try {
-          if (user.changed("password")){
-            user.password = await bcrypt.genSalt(10).then((salt) => bcrypt.hash(user.password, salt));
+          if (user.changed("password")) {
+            user.password = await bcrypt.genSalt(10).then((salt) => 
+              bcrypt.hash(user.password, salt));
           }
-        }catch (error) {
-          console.error('Error hashing password (beforeUpdate): ',error);
+        } catch (error) {
+          console.error("Error hashing password (beforeUpdate): ", error);
         }
-      }
-    }
-  }
+      },
+    },
+  },
 );
 
 // Relationship

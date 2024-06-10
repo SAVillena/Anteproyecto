@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { Sequelize } from "sequelize";
 import { DB_NAME, DB_USER, DB_PASS, DB_HOST } from "./configEnv.js";
 import { handleError } from "../utils/errorHandler.js";
 
