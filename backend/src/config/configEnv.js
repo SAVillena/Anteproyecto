@@ -39,3 +39,11 @@ export const RABBITMQ_PASSWORD = process.env.RABBITMQ_PASSWORD;
 export const RABBITMQ_VHOST = process.env.RABBITMQ_VHOST;
 
 export const RABBITMQ_QUEUE = process.env.RABBITMQ_QUEUE;
+
+export const MQTT_URL = process.env.MQTT_URL;
+
+export const MQTT_USERNAME = process.env.MQTT_USERNAME;
+
+export const MQTT_PASSWORD = process.env.MQTT_PASSWORD;
+
+export const MQTT_TOPIC = process.env.MQTT_TOPIC;

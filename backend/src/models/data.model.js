@@ -1,6 +1,7 @@
 "use strict";
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/configDB.js";
+import Serial from "./serial.model.js";
 
 class Data extends Model {}
 
