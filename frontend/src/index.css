@@ -103,4 +103,5 @@ a {
   height: 100%;         /* Alinea la altura con el iframe */
   width: 100%;          /* Aprovecha todo el ancho disponible */
   flex-direction: column;
+  padding-left: 0.3%;
 }

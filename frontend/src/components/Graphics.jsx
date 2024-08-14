@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { fetchData, fetchGraphicSerieData } from '../services/graphic.service.js';
 import ReactECharts from 'echarts-for-react';
+import gas25 from '../images/2.5.png'
+import gas10 from '../images/10.png'
+import camion from '../images/camion.png'
+import agua from '../images/agua.png'
+import caex from '../images/caex.png'
+import co2 from '../images/co2.png'
+import vocs from '../images/vocs.png'
 
 const DataComponent = () => {
   const [data, setData] = useState(null);
@@ -96,6 +103,11 @@ const DataComponent = () => {
       data: ['PM 2.5', 'PM 10'],
       axisLabel: {
         formatter: function (value) {
+          if (value === 'PM 2.5') {
+            return '{gas25|} ' + value;
+          } else if (value === 'PM 10') {
+            return '{gas10|} ' + value;
+          }
           return value;
         },
         margin: 20,
@@ -103,7 +115,21 @@ const DataComponent = () => {
           value: {
             lineHeight: 30,
             align: 'center'
-          },          
+          },
+          gas25: {
+            height: 30,
+            align: 'center',
+            backgroundColor: {
+              image: gas25
+            }
+          },
+          gas10: {
+            height: 30,
+            align: 'center',
+            backgroundColor: {
+              image: gas10
+            }
+          }          
         }
       }
     },
@@ -181,6 +207,16 @@ const DataComponent = () => {
           notMerge={true}
           lazyUpdate={true}
           theme={"theme_name"}/>
+        <label>Camion: </label>
+        <img src={camion} alt="Camion" style={{ width: '50px', height: '50px' }} />
+        <label>Stock de agua: </label>
+        <img src={agua} alt="agua" style={{ width: '50px', height: '50px' }}  />
+        <label>Caex: </label>
+        <img src={caex} alt="caex" style={{ width: '50px', height: '50px' }} />
+        <label>VOCS: </label>
+        <img src={vocs} alt="co2" style={{ width: '50px', height: '50px' }} />
+        <label>CO2: </label>
+        <img src={co2} alt="co2" style={{ width: '50px', height: '50px' }} />
         <ReactECharts
           option={serie}
           style={{ height: '52%', width: '100%' }}
