@@ -2,6 +2,7 @@
 
 import Joi from "joi";
 import ROLES from "../constants/roles.constants.js";
+
 /**
  * Esquema de validación para el cuerpo de la solicitud de usuario.
  * @constant {Object}
@@ -12,15 +13,19 @@ const userBodySchema = Joi.object({
     "any.required": "El nombre de usuario es obligatorio.",
     "string.base": "El nombre de usuario debe ser de tipo string.",
   }),
-  rut: Joi.string().required().min(9).max(10)
-  .pattern(/^[0-9]+[-|‐]{1}[0-9kK]{1}$/).messages({
-    "string.empty": "El rut no puede estar vacío.",
-    "any.required": "El rut es obligatorio.",
-    "string.base": "El rut debe ser de tipo string.",
-    "string.min": "El rut debe tener al menos 9 caracteres.",
-    "string.max": "El rut debe tener al menos 10 caracteres.",
-    "string.pattern.base": "El rut tiene el formato XXXXXXXX-X, ejemplo: 12345678-9.",
-  }),
+  rut: Joi.string()
+    .required()
+    .min(9)
+    .max(10)
+    .pattern(/^[0-9]+[-|‐]{1}[0-9kK]{1}$/)
+    .messages({
+      "string.empty": "El rut no puede estar vacío.",
+      "any.required": "El rut es obligatorio.",
+      "string.base": "El rut debe ser de tipo string.",
+      "string.min": "El rut debe tener al menos 9 caracteres.",
+      "string.max": "El rut debe tener un máximo de 10 caracteres.",
+      "string.pattern.base": "El rut tiene el formato XXXXXXXX-X, ejemplo: 12345678-9.",
+    }),
   password: Joi.string().required().min(5).messages({
     "string.empty": "La contraseña no puede estar vacía.",
     "any.required": "La contraseña es obligatoria.",
@@ -56,15 +61,12 @@ const userBodySchema = Joi.object({
  * @constant {Object}
  */
 const userIdSchema = Joi.object({
-  id: Joi.string()
-    .required()
-    .pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/)
-    .messages({
-      "string.empty": "El id no puede estar vacío.",
-      "any.required": "El id es obligatorio.",
-      "string.base": "El id debe ser de tipo string.",
-      "string.pattern.base": "El id proporcionado no es un ObjectId válido.",
-    }),
+  id: Joi.number().integer().positive().required().messages({
+    "number.base": "El id debe ser un número entero.",
+    "number.integer": "El id debe ser un número entero.",
+    "number.positive": "El id debe ser un número positivo.",
+    "any.required": "El id es obligatorio.",
+  }),
 });
 
 export { userBodySchema, userIdSchema };

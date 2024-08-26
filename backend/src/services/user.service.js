@@ -3,6 +3,8 @@
 import User from "../models/user.model.js";
 import Role from "../models/role.model.js";
 import { handleError } from "../utils/errorHandler.js";
+import bcrypt from 'bcryptjs';
+
 
 /**
  * Obtiene todos los usuarios de la base de datos
@@ -11,11 +13,11 @@ import { handleError } from "../utils/errorHandler.js";
 async function getUsers() {
   try {
     const users = await User.findAll({
-      attributes: { exclude: ['password'] }, // Exclude password field
+      attributes: { exclude: ["password"] }, // Exclude password field
       include: [{
         model: Role,
-        attributes: ['name'] // Only include the role name if necessary
-      }]
+        attributes: ["name"], // Only include the role name if necessary
+      }],
     });
 
     if (!users || users.length === 0) return [null, "No hay usuarios"];
@@ -33,18 +35,14 @@ async function getUsers() {
  */
 async function createUser(user) {
   try {
-    console.log("user: ",user);
     const { username, rut, email, password, roles } = user;
 
-
-    const userFound = await User.findOne({ where: { email: user.email } });
-    console.log("userFound: ",userFound);
+    const userFound = await User.findOne({ where: { email } });
 
     if (userFound) return [null, "El usuario ya existe"];
-    console.log("roles: ",roles);
+
     const rolesFound = await Role.findAll({ where: { name: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
-    
 
     const newUser = await User.create({
       username,
@@ -57,26 +55,32 @@ async function createUser(user) {
     return [newUser, null];
   } catch (error) {
     handleError(error, "user.service -> createUser");
+    return [null, error.message];
   }
 }
 
 /**
  * Obtiene un usuario por su id de la base de datos
- * @param {string} Id del usuario
+ * @param {string} id Id del usuario
  * @returns {Promise} Promesa con el objeto de usuario
  */
 async function getUserById(id) {
   try {
-    const user = await User.findById({ _id: id })
-      .select("-password")
-      .populate("roles")
-      .exec();
+    const user = await User.findOne({
+      where: { id },
+      attributes: { exclude: ["password"] },
+      include: [{
+        model: Role,
+        attributes: ["name"],
+      }],
+    });
 
     if (!user) return [null, "El usuario no existe"];
 
     return [user, null];
   } catch (error) {
     handleError(error, "user.service -> getUserById");
+    return [null, error.message];
   }
 }
 
@@ -88,53 +92,49 @@ async function getUserById(id) {
  */
 async function updateUser(id, user) {
   try {
-    const userFound = await User.findById(id);
+    const userFound = await User.findOne({ where: { id } });
     if (!userFound) return [null, "El usuario no existe"];
 
     const { username, email, rut, password, newPassword, roles } = user;
 
-    const matchPassword = await User.comparePassword(
-      password,
-      userFound.password,
-    );
-
+    const matchPassword = await bcrypt.compare(password, userFound.password);
     if (!matchPassword) {
       return [null, "La contraseña no coincide"];
     }
 
-    const rolesFound = await Role.find({ name: { $in: roles } });
+    const rolesFound = await Role.findAll({ where: { name: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
 
-    const myRole = rolesFound.map((role) => role._id);
+    const updatedUser = await userFound.update({
+      username,
+      email,
+      rut,
+      password: newPassword ? await bcrypt.hash(newPassword, 10) : userFound.password,
+      roleId: rolesFound[0].id,
+    });
 
-    const userUpdated = await User.findByIdAndUpdate(
-      id,
-      {
-        username,
-        email,
-        rut,
-        password: await User.encryptPassword(newPassword || password),
-        roles: myRole,
-      },
-      { new: true },
-    );
-
-    return [userUpdated, null];
+    return [updatedUser, null];
   } catch (error) {
     handleError(error, "user.service -> updateUser");
+    return [null, error.message];
   }
 }
 
 /**
  * Elimina un usuario por su id de la base de datos
- * @param {string} Id del usuario
+ * @param {string} id Id del usuario
  * @returns {Promise} Promesa con el objeto de usuario eliminado
  */
 async function deleteUser(id) {
   try {
-    return await User.findByIdAndDelete(id);
+    const user = await User.findOne({ where: { id } });
+    if (!user) return [null, "El usuario no existe"];
+
+    await user.destroy();
+    return [user, null];
   } catch (error) {
     handleError(error, "user.service -> deleteUser");
+    return [null, error.message];
   }
 }
 
