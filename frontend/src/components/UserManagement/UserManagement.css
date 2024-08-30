@@ -1,0 +1,18 @@
+.container {
+    max-width: 800px;
+  }
+  
+  .table td, .table th {
+    vertical-align: middle;
+  }
+  
+  .btn + .btn {
+    margin-left: 0.5rem;
+  }
+  
+  .user-management-wrapper {
+    flex: 1; /* Ocupará el espacio restante disponible */
+    width: 100%;
+    padding: 1rem;
+  }
+  

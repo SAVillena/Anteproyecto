@@ -12,12 +12,13 @@ function Root() {
   );
 }
 
-function PageRoot() { 
+function PageRoot() {
   return (
-    <div>
+    <div className="container-fluid"> {/* Cambié a container-fluid para asegurar un buen uso del espacio */}
       <Outlet />
     </div>
   );
 }
+
 
 export default Root;

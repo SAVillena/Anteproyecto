@@ -8,7 +8,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/auth');
   };
 
   return (
@@ -23,6 +23,9 @@ const Navbar = () => {
         </li>
         <li>
           <a href="/graphics">Gráficos</a>
+        </li>
+        <li>
+          <a href="/users">Usuarios</a>
         </li>
       </ul>
       <div className="user-info">
