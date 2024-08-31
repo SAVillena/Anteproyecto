@@ -109,7 +109,7 @@ async function updateUser(id, user) {
       username,
       email,
       rut,
-      password: newPassword ? await bcrypt.hash(newPassword, 10) : userFound.password,
+      password: newPassword ? newPassword : userFound.password,
       roleId: rolesFound[0].id,
     });
 

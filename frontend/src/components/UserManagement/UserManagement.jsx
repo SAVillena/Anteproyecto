@@ -9,7 +9,8 @@ const UserManagement = () => {
         email: '',
         rut: '',
         password: '',
-        roles: ['user'], 
+        newPassword: '', // Nuevo campo para la nueva contraseña
+        roles: ['user'],
     });
     const [editingUserId, setEditingUserId] = useState(null);
     const [error, setError] = useState(null);
@@ -28,26 +29,38 @@ const UserManagement = () => {
     };
 
     const handleInputChange = (e) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
         });
     };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (editingUserId) {
-                await updateUser(editingUserId, formData);
-            } else {
-                await createUser(formData);
+            const dataToSend = { ...formData };
+            
+            // Si no estamos editando, eliminamos `newPassword` del objeto a enviar
+            if (!editingUserId) {
+                delete dataToSend.newPassword;
+            } else if (!dataToSend.newPassword) {
+                delete dataToSend.newPassword; // También elimina si está vacío al editar
             }
+    
+            if (editingUserId) {
+                await updateUser(editingUserId, dataToSend);
+            } else {
+                await createUser(dataToSend);
+            }
+    
             fetchUsers();
             setFormData({
                 username: '',
                 email: '',
                 rut: '',
                 password: '',
+                newPassword: '', // Reinicia el campo de la nueva contraseña
                 roles: ['user'],
             });
             setEditingUserId(null);
@@ -55,14 +68,16 @@ const UserManagement = () => {
             setError('Error al guardar el usuario.');
         }
     };
+    
 
     const handleEditUser = (user) => {
         setFormData({
             username: user.username,
             email: user.email,
             rut: user.rut,
-            password: '', 
-            roles: user.roles,
+            password: '',
+            newPassword: '', // Dejar vacío el campo para la nueva contraseña
+            roles: [user.Role.name],
         });
         setEditingUserId(user.id);
     };
@@ -123,8 +138,33 @@ const UserManagement = () => {
                             value={formData.password}
                             onChange={handleInputChange}
                             className="form-control"
-                            required={!editingUserId} 
+                            required={!!editingUserId}
                         />
+                    </div>
+                    {editingUserId && (
+                        <div className="form-group">
+                            <label>Nueva Contraseña</label>
+                            <input
+                                type="password"
+                                name="newPassword"
+                                value={formData.newPassword}
+                                onChange={handleInputChange}
+                                className="form-control"
+                            />
+                        </div>
+                    )}
+                    <div className="form-group">
+                        <label>Rol</label>
+                        <select
+                            name="roles"
+                            value={formData.roles[0]}
+                            onChange={handleInputChange}
+                            className="form-control"
+                            required
+                        >
+                            <option value="user">Usuario</option>
+                            <option value="admin">Administrador</option>
+                        </select>
                     </div>
                     <button type="submit" className="btn btn-primary">
                         {editingUserId ? 'Actualizar Usuario' : 'Crear Usuario'}
@@ -149,20 +189,22 @@ const UserManagement = () => {
                                 <td>{user.username}</td>
                                 <td>{user.email}</td>
                                 <td>{user.rut}</td>
-                                <td>{Array.isArray(user.roles) ? user.roles.join(', ') : 'No Roles'}</td>
+                                <td>{user.Role ? user.Role.name : 'No Roles'}</td>
                                 <td>
-                                    <button
-                                        onClick={() => handleEditUser(user)}
-                                        className="btn btn-warning btn-sm mr-2"
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteUser(user.id)}
-                                        className="btn btn-danger btn-sm"
-                                    >
-                                        Eliminar
-                                    </button>
+                                    <>
+                                        <button
+                                            onClick={() => handleEditUser(user)}
+                                            className="btn btn-warning btn-sm mr-2"
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteUser(user.id)}
+                                            className="btn btn-danger btn-sm"
+                                        >
+                                            Eliminar
+                                        </button>
+                                    </>
                                 </td>
                             </tr>
                         ))}
