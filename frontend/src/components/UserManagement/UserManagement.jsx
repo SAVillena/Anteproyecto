@@ -18,6 +18,8 @@ import {
     Paper,
     Alert
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete'; // Importamos los íconos
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -26,7 +28,7 @@ const UserManagement = () => {
         email: '',
         rut: '',
         password: '',
-        newPassword: '', // Nuevo campo para la nueva contraseña
+        newPassword: '',
         roles: ['user'],
     });
     const [editingUserId, setEditingUserId] = useState(null);
@@ -58,11 +60,10 @@ const UserManagement = () => {
         try {
             const dataToSend = { ...formData };
 
-            // Si no estamos editando, eliminamos `newPassword` del objeto a enviar
             if (!editingUserId) {
                 delete dataToSend.newPassword;
             } else if (!dataToSend.newPassword) {
-                delete dataToSend.newPassword; // También elimina si está vacío al editar
+                delete dataToSend.newPassword;
             }
 
             if (editingUserId) {
@@ -77,7 +78,7 @@ const UserManagement = () => {
                 email: '',
                 rut: '',
                 password: '',
-                newPassword: '', // Reinicia el campo de la nueva contraseña
+                newPassword: '',
                 roles: ['user'],
             });
             setEditingUserId(null);
@@ -92,7 +93,7 @@ const UserManagement = () => {
             email: user.email,
             rut: user.rut,
             password: '',
-            newPassword: '', // Dejar vacío el campo para la nueva contraseña
+            newPassword: '',
             roles: [user.Role.name],
         });
         setEditingUserId(user.id);
@@ -202,7 +203,6 @@ const UserManagement = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
                             <TableCell>Nombre de Usuario</TableCell>
                             <TableCell>Email</TableCell>
                             <TableCell>RUT</TableCell>
@@ -213,7 +213,6 @@ const UserManagement = () => {
                     <TableBody>
                         {users.map((user) => (
                             <TableRow key={user.id}>
-                                <TableCell>{user.id}</TableCell>
                                 <TableCell>{user.username}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.rut}</TableCell>
@@ -224,6 +223,7 @@ const UserManagement = () => {
                                         color="warning"
                                         size="small"
                                         onClick={() => handleEditUser(user)}
+                                        startIcon={<EditIcon />} // Icono de edición
                                         style={{ marginRight: '8px' }}
                                     >
                                         Editar
@@ -233,6 +233,7 @@ const UserManagement = () => {
                                         color="error"
                                         size="small"
                                         onClick={() => handleDeleteUser(user.id)}
+                                        startIcon={<DeleteIcon />} // Icono de eliminar
                                     >
                                         Eliminar
                                     </Button>
