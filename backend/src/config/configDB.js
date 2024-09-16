@@ -5,7 +5,7 @@ import { handleError } from "../utils/errorHandler.js";
 
 const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
   host: DB_HOST,
-  dialect: "mysql",
+  dialect: "postgres",
   logging: console.log,
   pool: {
     max: 5,
