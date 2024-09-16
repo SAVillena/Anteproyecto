@@ -1,8 +1,7 @@
 .home-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    color: black;
+    height: 94vh;
 }
 
 .header {
@@ -41,6 +40,8 @@
     background-color: #e8e8e8;
     margin-right: 20px;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .right-pane {
