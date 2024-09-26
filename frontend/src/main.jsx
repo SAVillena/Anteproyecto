@@ -1,13 +1,17 @@
 import ReactDOM from 'react-dom/client';
-import App from './routes/App.jsx';
-import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+
+import App from './routes/App.jsx';
 import Root from './routes/Root.jsx';
 import ErrorPage from './routes/ErrorPage.jsx';
 import Login from './routes/Login.jsx';
 import Home from './components/Home/Home.jsx';
 import UserManagement from './components/UserManagement/UserManagement.jsx';
+
+import { ThemeModeProvider } from './context/ThemeContext';
+import CssBaseline from '@mui/material/CssBaseline';
 
 const router = createBrowserRouter([
   {
@@ -36,5 +40,8 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router} />
+  <ThemeModeProvider> {/* Movemos ThemeModeProvider para que envuelva toda la app */}
+    <CssBaseline /> {/* Esto asegura que la app esté normalizada */}
+    <RouterProvider router={router} />
+  </ThemeModeProvider>
 );

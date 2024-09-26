@@ -1,4 +1,4 @@
-import React, { createContext, useState, useMemo } from 'react';
+import React, { createContext, useState, useMemo, useEffect } from 'react';
 import { createMyTheme } from '../theme/theme';
 import { ThemeProvider } from '@mui/material/styles';
 
@@ -10,6 +10,11 @@ export const ThemeModeProvider = ({ children }) => {
   const toggleTheme = () => {
     setMode((prevMode) => (prevMode === 'dark' ? 'light' : 'dark'));
   };
+
+  // Este useEffect actualiza el atributo 'data-theme' en el body
+  useEffect(() => {
+    document.body.setAttribute('data-theme', mode); // Actualiza el tema en el body
+  }, [mode]);
 
   const theme = useMemo(() => createMyTheme(mode), [mode]);
 
