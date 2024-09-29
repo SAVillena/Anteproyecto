@@ -1,250 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import { getUsers, createUser, updateUser, deleteUser } from '../../services/user.service';
-import {
-    Container,
-    Typography,
-    Grid,
-    TextField,
-    Button,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow,
-    Paper,
-    Alert
-} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete'; // Importamos los íconos
+import { Container, Typography, Button, Alert } from '@mui/material';
+import UserList from './UserList';
+import UserForm from './UserForm';
+import ConfirmDialog from '../ConfirmDialog';
 
 const UserManagement = () => {
-    const [users, setUsers] = useState([]);
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        rut: '',
-        password: '',
-        newPassword: '',
-        roles: ['user'],
-    });
-    const [editingUserId, setEditingUserId] = useState(null);
-    const [error, setError] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [editingUser, setEditingUser] = useState(null);
+  const [openForm, setOpenForm] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchUsers();
-    }, []);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-    const fetchUsers = async () => {
-        try {
-            const data = await getUsers();
-            setUsers(data);
-        } catch (error) {
-            setError('Error al cargar los usuarios.');
-        }
-    };
+  // Función para obtener la lista de usuarios
+  const fetchUsers = async () => {
+    try {
+      const data = await getUsers();
+      setUsers(data);
+    } catch (error) {
+      setError('Error al cargar los usuarios.');
+    }
+  };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+  // Función para abrir el formulario en modo creación
+  const handleCreateUser = () => {
+    setEditingUser(null);
+    setOpenForm(true);
+  };
 
-    const handleFormSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const dataToSend = { ...formData };
+  // Función para abrir el formulario en modo edición
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setOpenForm(true);
+  };
 
-            if (!editingUserId) {
-                delete dataToSend.newPassword;
-            } else if (!dataToSend.newPassword) {
-                delete dataToSend.newPassword;
-            }
+  // Función para abrir el diálogo de confirmación al eliminar
+  const handleDeleteUser = (user) => {
+    setUserToDelete(user);
+    setOpenConfirm(true);
+  };
 
-            if (editingUserId) {
-                await updateUser(editingUserId, dataToSend);
-            } else {
-                await createUser(dataToSend);
-            }
+  // Función para manejar el envío del formulario (crear/editar)
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (editingUser) {
+        await updateUser(editingUser.id, formData);
+      } else {
+        await createUser(formData);
+      }
+      setOpenForm(false);
+      fetchUsers();
+    } catch (error) {
+      setError('Error al guardar el usuario.');
+    }
+  };
 
-            fetchUsers();
-            setFormData({
-                username: '',
-                email: '',
-                rut: '',
-                password: '',
-                newPassword: '',
-                roles: ['user'],
-            });
-            setEditingUserId(null);
-        } catch (error) {
-            setError('Error al guardar el usuario.');
-        }
-    };
+  // Función para confirmar la eliminación
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteUser(userToDelete.id);
+      setOpenConfirm(false);
+      fetchUsers();
+    } catch (error) {
+      setError('Error al eliminar el usuario.');
+    }
+  };
 
-    const handleEditUser = (user) => {
-        setFormData({
-            username: user.username,
-            email: user.email,
-            rut: user.rut,
-            password: '',
-            newPassword: '',
-            roles: [user.Role.name],
-        });
-        setEditingUserId(user.id);
-    };
+  return (
+    <Container style={{ marginTop: '20px' }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Gestión de Usuarios
+      </Typography>
 
-    const handleDeleteUser = async (id) => {
-        try {
-            await deleteUser(id);
-            fetchUsers();
-        } catch (error) {
-            setError('Error al eliminar el usuario.');
-        }
-    };
+      {error && <Alert severity="error">{error}</Alert>}
 
-    return (
-        <Container>
-            <Typography variant="h4" align="center" gutterBottom>
-                Gestión de Usuarios
-            </Typography>
+      <Button variant="contained" color="primary" onClick={handleCreateUser}>
+        Crear Usuario
+      </Button>
 
-            {error && <Alert severity="error">{error}</Alert>}
+      <UserList users={users} onEdit={handleEditUser} onDelete={handleDeleteUser} />
 
-            <form onSubmit={handleFormSubmit}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Nombre de usuario"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            type="email"
-                            fullWidth
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="RUT"
-                            name="rut"
-                            value={formData.rut}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            label="Contraseña"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            fullWidth
-                            required={!!editingUserId}
-                        />
-                    </Grid>
-                    {editingUserId && (
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Nueva Contraseña"
-                                name="newPassword"
-                                type="password"
-                                value={formData.newPassword}
-                                onChange={handleInputChange}
-                                fullWidth
-                            />
-                        </Grid>
-                    )}
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
-                            <InputLabel>Rol</InputLabel>
-                            <Select
-                                name="roles"
-                                value={formData.roles[0]}
-                                onChange={handleInputChange}
-                                fullWidth
-                                required
-                            >
-                                <MenuItem value="user">Usuario</MenuItem>
-                                <MenuItem value="admin">Administrador</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button variant="contained" color="primary" type="submit" fullWidth>
-                            {editingUserId ? 'Actualizar Usuario' : 'Crear Usuario'}
-                        </Button>
-                    </Grid>
-                </Grid>
-            </form>
+      {openForm && (
+        <UserForm
+          user={editingUser}
+          onClose={() => setOpenForm(false)}
+          onSubmit={handleFormSubmit}
+        />
+      )}
 
-            <Typography variant="h5" align="center" gutterBottom style={{ marginTop: '2rem' }}>
-                Lista de Usuarios
-            </Typography>
-
-            <Paper>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Nombre de Usuario</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>RUT</TableCell>
-                            <TableCell>Roles</TableCell>
-                            <TableCell>Acciones</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id}>
-                                <TableCell>{user.username}</TableCell>
-                                <TableCell>{user.email}</TableCell>
-                                <TableCell>{user.rut}</TableCell>
-                                <TableCell>{user.Role ? user.Role.name : 'No Roles'}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="contained"
-                                        color="warning"
-                                        size="small"
-                                        onClick={() => handleEditUser(user)}
-                                        startIcon={<EditIcon />} // Icono de edición
-                                        style={{ marginRight: '8px' }}
-                                    >
-                                        Editar
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        color="error"
-                                        size="small"
-                                        onClick={() => handleDeleteUser(user.id)}
-                                        startIcon={<DeleteIcon />} // Icono de eliminar
-                                    >
-                                        Eliminar
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </Paper>
-        </Container>
-    );
+      {openConfirm && (
+        <ConfirmDialog
+          title="Confirmar Eliminación"
+          message={`¿Estás seguro de que deseas eliminar al usuario ${userToDelete.username}?`}
+          onCancel={() => setOpenConfirm(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+    </Container>
+  );
 };
 
 export default UserManagement;
