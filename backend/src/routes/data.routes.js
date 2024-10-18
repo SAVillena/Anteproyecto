@@ -9,5 +9,6 @@ router.get("/", dataController.getData);
 router.get("/show", dataController.showData);
 router.post("/createData", dataController.createData);
 router.get("/getDataSerie", dataController.getDataSerie);
+router.get("/getFilterData", dataController.getFilterData);
 
 export default router;

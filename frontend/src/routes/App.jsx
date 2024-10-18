@@ -1,15 +1,9 @@
-import Graphics from '../components/Graphics';
-import EmbeddedPage from "../components/iframe";
+import Home from '../components/Home/Home';
 
 function App() {
   return (
     <>
-    <div className="app">
-      <div className="container">
-      <EmbeddedPage/>
-      <Graphics />
-      </div>
-    </div>
+      <Home />
     </>
   );
 }

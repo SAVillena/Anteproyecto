@@ -73,11 +73,24 @@ async function getDataSerie(req, res) {
   }
 }
 
+async function getFilterData(req, res) {
+  try {
+    const [filteredData, errorData] = await DataService.getFilterData(req.body);
+    if (errorData) return respondError(req, res, 404, errorData);
+
+    respondSuccess(req, res, 200, filteredData);
+  } catch (error) {
+    handleError(error, "data.controller -> getFilterData");
+    respondError(req, res, 400, error.message);
+  }
+}
+
 export default {
     getData,
     showData,
     createData,
     getDataSerie,
+    getFilterData,
 };
  
 

@@ -11,9 +11,12 @@ function EmbeddedPage({ authToken }) {
     );
 
     return (
-        <div className='iframe-container'>  
-        <iframe src={iframeSrc} width="100%" height="100%" />
-        </div>
+        <iframe
+            src={iframeSrc}
+            width="100%"
+            height="100%"
+            style={{ border: 'none', display: 'block' }}
+        />
     );
 }
 

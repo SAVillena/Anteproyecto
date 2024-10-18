@@ -7,42 +7,8 @@ import { Sequelize, Op } from 'sequelize';
  */
 async function getData() {
     try {
-        const lastTimestamp = await Data.max('timestamp');
-        const fiveMinutesAgo = new Date(new Date(lastTimestamp).getTime() - 5 * 60 * 1000); // 5 minutos
-        const attributes = [
-            [Sequelize.fn('AVG', Sequelize.col('ad_2')), 'avg_ad_2'],
-            [Sequelize.fn('AVG', Sequelize.col('ad_3')), 'avg_ad_3'],
-            [Sequelize.fn('MAX', Sequelize.col('ad_2')), 'max_ad_2'],
-            [Sequelize.fn('MAX', Sequelize.col('ad_3')), 'max_ad_3'],
-            [Sequelize.fn('MIN', Sequelize.col('ad_2')), 'min_ad_2'],
-            [Sequelize.fn('MIN', Sequelize.col('ad_3')), 'min_ad_3']
-        ];
-
-        // Usa raw: true si solo necesitas los valores de las agregaciones sin los datos del modelo
-        const result = await Data.findOne({
-            attributes,
-            where: {
-                timestamp: {
-                    [Op.gte]: fiveMinutesAgo
-                }
-            },
-            raw: true
-        });
-
-        // Aquí result ya es un objeto con las agregaciones, no necesitas un array de objetos
-        const total = {
-            avg_ad_2: Math.round(result.avg_ad_2),
-            avg_ad_3: Math.round(result.avg_ad_3),
-            max_ad_2: Math.round(result.max_ad_2),
-            max_ad_3: Math.round(result.max_ad_3),
-            min_ad_2: Math.round(result.min_ad_2),
-            min_ad_3: Math.round(result.min_ad_3)
-        };
-
-        const todo = {
-            total
-        };
-
+        const todo = await Data.findAll();
+        
         return [todo, null];
     } catch (error) {
         console.error('Error al mostrar los datos: ', error);
@@ -65,7 +31,7 @@ async function getDataSerie() {
         const lastTimestamp = await Data.max('timestamp');
         const fiveMinutesAgo = new Date(new Date(lastTimestamp).getTime() - 5 * 60 * 1000); // 5 minutos
         const result = await Data.findAll({
-            attributes: ['ad_2', 'ad_3','timestamp'],
+            attributes: ['ad_2', 'ad_3', 'timestamp'],
             where: {
                 timestamp: {
                     [Op.gte]: fiveMinutesAgo
@@ -98,8 +64,37 @@ async function getDataSerie() {
     }
 };
 
+async function getFilterData(filter) {
+    try {
+        const { lat, lng, ad_2, ad_3, startDate, endDate } = filter;
+        const where = {};
+
+        if (lat) where.lat = lat;
+        if (lng) where.lng = lng;
+        if (ad_2) where.ad_2 = ad_2;
+        if (ad_3) where.ad_3 = ad_3;
+
+        // Filtro por rango de fechas
+        if (startDate && endDate) {
+            where.timestamp = {
+                [Op.between]: [new Date(startDate), new Date(endDate)],
+            };
+        }
+
+        // Realiza la búsqueda en la base de datos
+        const filteredData = await Data.findAll({ where });
+
+        return filteredData;
+    }catch (error) {
+        console.error('Error al filtrar:', error);
+        return [null, error];
+    }
+};
+
+
 export default {
     getData,
     createData,
     getDataSerie,
+    getFilterData
 };
