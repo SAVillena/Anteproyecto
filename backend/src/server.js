@@ -44,13 +44,13 @@ async function setupServer() {
     });
 
     // Conecta a MQTT y consume los mensajes
-    /* try {
+     try {
       const client = connectMQTT();
       console.log("Conectado a MQTT: ", client.options.clientId);
       consumeMQTTMessages(client);
     } catch (error) {
       handleError(error, "Error al conectar con MQTT");
-    } */
+    }
   } catch (err) {
     handleError(err, "/server.js -> setupServer");
   }
