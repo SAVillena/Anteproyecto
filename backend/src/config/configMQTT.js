@@ -1,5 +1,6 @@
 import mqtt from "mqtt";
 import { handleError } from "../utils/errorHandler.js";
+import DataService from "../services/data.service.js";
 import {
   MQTT_PASSWORD,
   MQTT_TOPIC,
@@ -81,10 +82,21 @@ export function consumeMQTTMessages(client) {
     });
   });
 
-  // Manejo de mensajes entrantes
-  client.on("message", (topic, message) => {
-    console.log(`[${new Date().toISOString()}] Mensaje recibido:`);
-    console.log(`   - Tópico: ${topic}`);
-    console.log(`   - Mensaje: ${message.toString()}`);
+  client.on("message", async (topic, message) => {
+    // console.log(`[${new Date().toISOString()}] Mensaje recibido:`);
+    // console.log(`   - Tópico: ${topic}`);
+    // console.log(`   - Mensaje: ${message.toString()}`);
+
+    try {
+      const data = JSON.parse(message.toString());
+      const [result, error] = await DataService.createData(data);
+      if (error) {
+        console.error("Error al guardar los datos del sensor:", error);
+      } else {
+        console.log("Datos del sensor guardados exitosamente:");
+      }
+    } catch (error) {
+      console.error("Error al procesar el mensaje MQTT:", error.message);
+    }
   });
 }

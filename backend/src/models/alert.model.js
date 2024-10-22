@@ -2,7 +2,8 @@
 import { Model, DataTypes } from "sequelize";
 import { sequelize } from "../config/configDB.js";
 
-class Alert extends Model {}
+
+class Alert extends Model { }
 
 Alert.init(
     {
@@ -10,10 +11,6 @@ Alert.init(
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
-        },
-        Datos_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
         },
         timestamp: {
             type: DataTypes.DATE,
@@ -34,5 +31,7 @@ Alert.init(
         timestamps: true,
     },
 );
+
+
 
 export default Alert;

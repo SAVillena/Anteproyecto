@@ -19,8 +19,8 @@ async function setupDB() {
   try {
     await sequelize.authenticate();
     console.log("=> Conectado a la base de datos");
-    // await sequelize.sync({force: false}); // Descomentar para forzar la creación de tablas
-    await sequelize.sync();
+    await sequelize.sync({force: true}); // Descomentar para forzar la creación de tablas
+    //await sequelize.sync();
   } catch (err) {
     handleError(err, "/configDB.js -> setupDB");
     process.exit(1);

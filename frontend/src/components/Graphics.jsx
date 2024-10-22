@@ -54,4 +54,6 @@ function Graficos() {
         </>
     );
 };
+
+
 export default Graficos;

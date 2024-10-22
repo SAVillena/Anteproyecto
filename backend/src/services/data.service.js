@@ -1,4 +1,5 @@
 import Data from '../models/data.model.js';
+import Serial from '../models/serial.model.js';
 import { Sequelize, Op } from 'sequelize';
 /**
  * @async
@@ -8,20 +9,88 @@ import { Sequelize, Op } from 'sequelize';
 async function getData() {
     try {
         const todo = await Data.findAll();
-        
-        return [todo, null];
+
+        // Vamos a realizar un mapeo de los datos para obtener Minimo, Maximo y Promedio de ad_2 y ad_3\
+        let min_ad_2 = Infinity;
+        let min_ad_3 = Infinity;
+        let max_ad_2 = -Infinity;
+        let max_ad_3 = -Infinity;
+        let sum_ad_2 = 0;
+        let sum_ad_3 = 0;
+        todo.forEach(item => {
+            if (item.ad_2 < min_ad_2) min_ad_2 = item.ad_2;
+            if (item.ad_3 < min_ad_3) min_ad_3 = item.ad_3;
+            if (item.ad_2 > max_ad_2) max_ad_2 = item.ad_2;
+            if (item.ad_3 > max_ad_3) max_ad_3 = item.ad_3;
+            sum_ad_2 += item.ad_2;
+            sum_ad_3 += item.ad_3;
+        });
+        const avg_ad_2 = sum_ad_2 / todo.length;
+        const avg_ad_3 = sum_ad_3 / todo.length;
+
+        // Agregar los valores al objeto que se retorna
+        const result = {
+            data: todo,
+            min_ad_2: min_ad_2,
+            min_ad_3: min_ad_3,
+            max_ad_2: max_ad_2,
+            max_ad_3: max_ad_3,
+            avg_ad_2: avg_ad_2,
+            avg_ad_3: avg_ad_3
+        };
+
+        return [result, null];
     } catch (error) {
         console.error('Error al mostrar los datos: ', error);
         return [null, error];
     }
 }
 
+/**
+ * @param {Object} dataInput - Datos recibidos del sensor.
+ * @returns {Promise<[Object|null, Error|null]>}
+ */
 async function createData(dataInput) {
     try {
-        const createdData = await Data.create(dataInput);
+        const { serial, lat, lng, ts, monitoringGasMap } = dataInput;
+
+        // Verificar si el serial ya existe
+        let serialRecord = await Serial.findOne({ where: { serial } });
+
+        // Si no existe, crear un nuevo registro en la tabla Serials
+        if (!serialRecord) {
+            serialRecord = await Serial.create({ serial });
+            console.log(`Serial ${serial} agregado exitosamente.`);
+        }
+
+        // Preparar los datos para la inserción en la tabla Data
+        const dataToInsert = {
+            serialId: serialRecord.id,
+            lat,
+            lng,
+            timestamp: new Date(ts),
+            ad_2: monitoringGasMap['2'] || null,
+            ad_3: monitoringGasMap['3'] || null,
+        };
+
+        if(dataToInsert.ad_2 >= 8 && dataToInsert.ad_2 < 9) {
+            //Logica para avisar posible precaucion PM2.5
+        } else if(dataToInsert.ad_2 >= 9) {
+            //Logica para avisar posible Urgencia PM2.5
+        }
+
+        if(dataToInsert.ad_3 >= 15 && dataToInsert.ad_3 < 20) {
+            //Logica para avisar posible precaucion PM10
+        } else if(dataToInsert.ad_3 >= 20) {
+            //Logica para avisar posible Urgencia PM10
+        }
+
+        // Crear el nuevo registro en la tabla Data
+        const createdData = await Data.create(dataToInsert);
         return [createdData, null];
+
     } catch (error) {
-        console.error('Error al crear los datos: ', error);
+        console.error('Error al crear o actualizar los datos del sensor:', error);
         return [null, error];
     }
 }
