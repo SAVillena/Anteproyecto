@@ -48,4 +48,8 @@ async function deleteAlert(alertInput) {
     }
 }
 
-export { getAlerts, createAlert, deleteAlert };
+export default { 
+    getAlerts, 
+    createAlert, 
+    deleteAlert 
+};

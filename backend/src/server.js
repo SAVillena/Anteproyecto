@@ -16,6 +16,7 @@ import { setupDB } from "./config/configDB.js";
 import { handleFatalError, handleError } from "./utils/errorHandler.js";
 import { createRoles, createUsers } from "./config/initialSetup.js";
 import { connectMQTT, consumeMQTTMessages } from "./config/configMQTT.js";
+import Alert from "./models/alert.model.js";
 
 /**
  * Inicia el servidor web
@@ -63,6 +64,7 @@ async function setupAPI() {
   try {
     // Inicia la conexión a la base de datos
     await setupDB();
+    await Alert.sync({ alter: true });
     // Inicia el servidor web
     await setupServer();
     // Inicia la creación de los roles

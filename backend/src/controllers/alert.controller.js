@@ -54,4 +54,8 @@ async function deleteAlert(req, res) {
   }
 }
 
-export { getAlerts, createAlert, deleteAlert };
+export default{ 
+  getAlerts,
+  createAlert,
+  deleteAlert 
+};

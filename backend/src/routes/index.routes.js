@@ -11,6 +11,9 @@ import authRoutes from "./auth.routes.js";
 /** Enrutador de datos */
 import dataRoutes from "./data.routes.js";
 
+/** Enrutador de alertas */
+import alertRoutes from "./alert.routes.js";
+
 /** Middleware de autenticación */
 import authenticationMiddleware from "../middlewares/authentication.middleware.js";
 
@@ -23,6 +26,8 @@ router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
 // Define las rutas para los datos /api/data
 router.use("/data", dataRoutes);
+// Define las rutas para las alertas /api/alert
+router.use("/alert", alertRoutes);
 
 
 // Exporta el enrutador

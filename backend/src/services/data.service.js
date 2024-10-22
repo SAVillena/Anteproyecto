@@ -1,6 +1,7 @@
 import Data from '../models/data.model.js';
 import Serial from '../models/serial.model.js';
 import { Sequelize, Op } from 'sequelize';
+import Alert from './alert.service.js'
 /**
  * @async
  * @function getData
@@ -73,27 +74,48 @@ async function createData(dataInput) {
             ad_3: monitoringGasMap['3'] || null,
         };
 
-        if(dataToInsert.ad_2 >= 8 && dataToInsert.ad_2 < 9) {
-            //Logica para avisar posible precaucion PM2.5
-        } else if(dataToInsert.ad_2 >= 9) {
-            //Logica para avisar posible Urgencia PM2.5
-        }
-
-        if(dataToInsert.ad_3 >= 15 && dataToInsert.ad_3 < 20) {
-            //Logica para avisar posible precaucion PM10
-        } else if(dataToInsert.ad_3 >= 20) {
-            //Logica para avisar posible Urgencia PM10
-        }
-
         // Crear el nuevo registro en la tabla Data
         const createdData = await Data.create(dataToInsert);
-        return [createdData, null];
+        
 
+        // Calcular el próximo ID de datos una sola vez
+        const nextDataId = (await Data.max('id'));
+
+        // Función auxiliar para crear alertas
+        async function createAlert(alertType, alertValue) {
+            const alertInput = {
+                dataId: nextDataId,
+                serialId: serialRecord.id,
+                ts: new Date(ts),
+                alert_type: alertType,
+                alert_value: alertValue,
+            };
+            const [alert, error] = await Alert.createAlert(alertInput);
+            if (error) {
+                console.error(`Error en alerta ${alertType}:`, error);
+            }
+        }
+
+        // Crear alertas según los valores de ad_2 (PM2.5) y ad_3 (PM10)
+        if (dataToInsert.ad_2 >= 25) {
+            const alertType = dataToInsert.ad_2 < 30 ? 'Precaucion, PM2.5' : 'Urgencia, PM2.5';
+            console.log(alertType);
+            await createAlert(alertType, dataToInsert.ad_2);
+        }
+
+        if (dataToInsert.ad_3 >= 35) {
+            const alertType = dataToInsert.ad_3 < 40 ? 'Precaucion, PM10' : 'Urgencia, PM10';
+            console.log(alertType);
+            await createAlert(alertType, dataToInsert.ad_3);
+        }
+
+        return [createdData, null];
     } catch (error) {
         console.error('Error al crear o actualizar los datos del sensor:', error);
         return [null, error];
     }
 }
+
 
 async function getDataSerie() {
     try {
@@ -154,7 +176,7 @@ async function getFilterData(filter) {
         const filteredData = await Data.findAll({ where });
 
         return filteredData;
-    }catch (error) {
+    } catch (error) {
         console.error('Error al filtrar:', error);
         return [null, error];
     }

@@ -10,6 +10,7 @@ import Login from './routes/Login.jsx';
 import Home from './components/Home/Home.jsx';
 import UserManagement from './components/UserManagement/UserManagement.jsx';
 import GraphicRoute from './routes/GraphicRoute.jsx';
+import AlertRoute from './routes/AlertRoute.jsx';
 
 import { ThemeModeProvider } from './context/ThemeContext';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: '/graphics',
         element: <GraphicRoute />,
+      },
+      {
+        path: '/alerts',
+        element: <AlertRoute />,
       }
     ],
   },
