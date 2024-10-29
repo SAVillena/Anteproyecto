@@ -38,10 +38,19 @@
 // export default Filtros;
 
 import React, { useState } from 'react';
-import { Box, Typography, MenuItem, Select, FormControl, InputLabel, Button } from '@mui/material';
+import { 
+    Box, 
+    MenuItem, 
+    Select, 
+    FormControl, 
+    InputLabel, 
+    Button, 
+    TextField 
+} from '@mui/material';
 
 function Filtros({ onAplicarFiltros }) {
     const [filtroSeleccionado, setFiltroSeleccionado] = useState('');
+    const [fecha, setFecha] = useState('');
 
     const manejarEnvio = (evento) => {
         evento.preventDefault();
@@ -52,9 +61,12 @@ function Filtros({ onAplicarFiltros }) {
         setFiltroSeleccionado(e.target.value);
     };
 
+    const handleFechaChange = (e) => {
+        setFecha(e.target.value);
+    };
+
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {/* Sección 1: Filtros */}
             <Box sx={{ flex: 1, padding: 2 }}>
                 <form
                     onSubmit={manejarEnvio}
@@ -80,15 +92,17 @@ function Filtros({ onAplicarFiltros }) {
 
                     {/* Render Condicional según el Filtro Seleccionado */}
                     {filtroSeleccionado === 'fecha' && (
-                        <FormControl fullWidth>
-                            <InputLabel htmlFor="fechaInput"></InputLabel>
-                            <input
-                                type="date"
-                                id="fechaInput"
-                                name="fecha"
-                                style={{ width: '100%' }}
-                            />
-                        </FormControl>
+                        <TextField
+                            id="fechaInput"
+                            label="Selecciona Fecha"
+                            type="date"
+                            value={fecha}
+                            onChange={handleFechaChange}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            fullWidth
+                        />
                     )}
 
                     {filtroSeleccionado === 'sensor' && (
@@ -117,20 +131,8 @@ function Filtros({ onAplicarFiltros }) {
                     </Button>
                 </form>
             </Box>
-
-            {/* Sección 2
-            <Box sx={{ flex: 1, padding: 2, borderTop: '1px solid #ddd' }}>
-                <Typography variant="h6">Sección 2</Typography>
-            </Box>
-
-            {/* Sección 3 
-            <Box sx={{ flex: 1, padding: 2, borderTop: '1px solid #ddd' }}>
-                <Typography variant="h6">Sección 3</Typography>
-            </Box> */}
         </Box>
     );
 }
 
 export default Filtros;
-
-

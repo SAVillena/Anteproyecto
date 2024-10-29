@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, Box, Typography, Grid, Paper, Avatar, Divider } from '@mui/material';
+import { Drawer, Box, Typography, Grid, Paper, Avatar } from '@mui/material';
 import CamionIcon from '../../images/camion.png'; // Imagen del camión
 
 function Dwr({ open, onClose, camiones }) {
@@ -15,7 +15,7 @@ function Dwr({ open, onClose, camiones }) {
             onClose={onClose}
             sx={{
                 '& .MuiDrawer-paper': {
-                    height: '40vh', // Ocupa menos de la mitad de la pantalla
+                    height: '43vh', // Ocupa menos de la mitad de la pantalla
                     overflow: 'auto', // Habilita el desplazamiento
                 },
             }}
@@ -37,7 +37,7 @@ function Dwr({ open, onClose, camiones }) {
 
                 <Grid container spacing={2} justifyContent="center">
                     {camiones.map((camion) => (
-                        <Grid item xs={12} md={6} key={camion.id}>
+                        <Grid item xs={1.6} key={camion.id}> {/* Cambiado a xs={1.5} para 8 elementos por fila */}
                             <Paper elevation={3} sx={{ padding: 2, display: 'flex', alignItems: 'center' }}>
                                 <Avatar
                                     src={CamionIcon}
