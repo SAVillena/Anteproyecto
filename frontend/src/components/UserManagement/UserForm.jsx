@@ -11,6 +11,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Box,
 } from '@mui/material';
 
 const UserForm = ({ user, onClose, onSubmit }) => {
@@ -25,7 +26,6 @@ const UserForm = ({ user, onClose, onSubmit }) => {
 
   useEffect(() => {
     if (user) {
-      // Si hay un usuario, estamos en modo edición
       setFormData({
         username: user.username,
         email: user.email,
@@ -35,7 +35,6 @@ const UserForm = ({ user, onClose, onSubmit }) => {
         roles: [user.Role ? user.Role.name : 'user'],
       });
     } else {
-      // Si no, estamos en modo creación
       setFormData({
         username: '',
         email: '',
@@ -66,10 +65,8 @@ const UserForm = ({ user, onClose, onSubmit }) => {
     e.preventDefault();
     const dataToSend = { ...formData };
     if (!user) {
-      // En creación, no enviamos newPassword
       delete dataToSend.newPassword;
     } else if (!dataToSend.newPassword) {
-      // En edición, si no se especifica newPassword, no se envía
       delete dataToSend.newPassword;
     }
     onSubmit(dataToSend);
@@ -77,10 +74,22 @@ const UserForm = ({ user, onClose, onSubmit }) => {
 
   return (
     <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{user ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
+      <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', mb: 2 }}>
+        {user ? 'Editar Usuario' : 'Crear Usuario'}
+      </DialogTitle>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            mt: 1,
+            padding: 2,
+            borderRadius: '8px',
+            boxShadow: 3,
+            backgroundColor: 'background.paper',
+          }}
+        >
+          <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Nombre de usuario"
@@ -152,12 +161,18 @@ const UserForm = ({ user, onClose, onSubmit }) => {
               </FormControl>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" color="primary" type="submit" fullWidth>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                fullWidth
+                sx={{ padding: '10px', mt: 2, fontWeight: 'bold' }}
+              >
                 {user ? 'Actualizar Usuario' : 'Crear Usuario'}
               </Button>
             </Grid>
           </Grid>
-        </form>
+        </Box>
       </DialogContent>
     </Dialog>
   );

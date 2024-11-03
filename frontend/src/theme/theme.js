@@ -12,22 +12,22 @@ export const getDesignTokens = (mode) => ({
     ...(mode === 'light'
       ? {
           background: {
-            default: '#f5f5f5',
-            paper: '#ffffff',
+            default: '#e0e0e0', // Fondo general gris claro
+            paper: '#ffffff',   // Fondo de las tarjetas en blanco
           },
           text: {
-            primary: '#000000',
-            secondary: '#555555',
+            primary: '#000000',  // Texto en negro para contraste
+            secondary: '#555555', // Texto secundario en gris oscuro
           },
         }
       : {
           background: {
-            default: '#242424',
-            paper: '#333',
+            default: '#1b1b1b', // Fondo general en gris oscuro
+            paper: '#2c2c2c',   // Fondo de las tarjetas en gris más claro
           },
           text: {
-            primary: 'rgba(255, 255, 255, 0.87)',
-            secondary: 'rgba(255, 255, 255, 0.54)',
+            primary: 'rgba(255, 255, 255, 0.87)', // Texto principal en blanco semiopaco
+            secondary: 'rgba(255, 255, 255, 0.7)', // Texto secundario en blanco más opaco
           },
         }),
   },

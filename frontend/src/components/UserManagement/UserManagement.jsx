@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getUsers, createUser, updateUser, deleteUser } from '../../services/user.service';
-import { Container, Typography, Button, Alert } from '@mui/material';
+import { Container, Typography, Button, Alert, Box } from '@mui/material';
 import UserList from './UserList';
 import UserForm from './UserForm';
 import ConfirmDialog from '../ConfirmDialog';
@@ -17,7 +17,6 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
-  // Función para obtener la lista de usuarios
   const fetchUsers = async () => {
     try {
       const data = await getUsers();
@@ -27,25 +26,21 @@ const UserManagement = () => {
     }
   };
 
-  // Función para abrir el formulario en modo creación
   const handleCreateUser = () => {
     setEditingUser(null);
     setOpenForm(true);
   };
 
-  // Función para abrir el formulario en modo edición
   const handleEditUser = (user) => {
     setEditingUser(user);
     setOpenForm(true);
   };
 
-  // Función para abrir el diálogo de confirmación al eliminar
   const handleDeleteUser = (user) => {
     setUserToDelete(user);
     setOpenConfirm(true);
   };
 
-  // Función para manejar el envío del formulario (crear/editar)
   const handleFormSubmit = async (formData) => {
     try {
       if (editingUser) {
@@ -60,7 +55,6 @@ const UserManagement = () => {
     }
   };
 
-  // Función para confirmar la eliminación
   const handleConfirmDelete = async () => {
     try {
       await deleteUser(userToDelete.id);
@@ -72,31 +66,41 @@ const UserManagement = () => {
   };
 
   return (
-    <Container style={{ marginTop: '20px' }}>
-      <Typography variant="h4" align="center" gutterBottom>
+    <Container maxWidth="md" sx={{ marginTop: '40px', padding: '24px', borderRadius: '8px', boxShadow: 3 }}>
+      <Typography variant="h4" align="center" gutterBottom sx={{ marginBottom: '24px' }}>
         Gestión de Usuarios
       </Typography>
 
-      {error && <Alert severity="error">{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ marginBottom: '16px' }}>
+          {error}
+        </Alert>
+      )}
 
-      <Button variant="contained" color="primary" onClick={handleCreateUser}>
-        Crear Usuario
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+        <Button variant="contained" color="primary" onClick={handleCreateUser}>
+          Crear Usuario
+        </Button>
+      </Box>
 
-      <UserList users={users} onEdit={handleEditUser} onDelete={handleDeleteUser} />
+      <Box sx={{ marginBottom: '24px' }}>
+        <UserList users={users} onEdit={handleEditUser} onDelete={handleDeleteUser} />
+      </Box>
 
       {openForm && (
-        <UserForm
-          user={editingUser}
-          onClose={() => setOpenForm(false)}
-          onSubmit={handleFormSubmit}
-        />
+        <Box sx={{ padding: '16px', borderRadius: '8px', boxShadow: 2 }}>
+          <UserForm
+            user={editingUser}
+            onClose={() => setOpenForm(false)}
+            onSubmit={handleFormSubmit}
+          />
+        </Box>
       )}
 
       {openConfirm && (
         <ConfirmDialog
           title="Confirmar Eliminación"
-          message={`¿Estás seguro de que deseas eliminar al usuario ${userToDelete.username}?`}
+          message={`¿Estás seguro de que deseas eliminar al usuario ${userToDelete?.username}?`}
           onCancel={() => setOpenConfirm(false)}
           onConfirm={handleConfirmDelete}
         />

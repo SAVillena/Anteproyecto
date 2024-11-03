@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Select, MenuItem, TextField, Button, Alert, Grid } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, Select, MenuItem, TextField, Button, Alert, Grid, useTheme } from '@mui/material';
 
-
+// Mock data de prueba
 const mockData = [
     {
         id: 1,
@@ -34,6 +34,7 @@ const mockData = [
 ];
 
 function GridLayout() {
+    const theme = useTheme();
     const [filteredAlerts, setFilteredAlerts] = useState(mockData);
     const [filters, setFilters] = useState({
         alertType: '',
@@ -76,23 +77,34 @@ function GridLayout() {
             display: 'grid',
             gridTemplateColumns: 'repeat(5, 1fr)',
             gridTemplateRows: 'repeat(5, 1fr)',
-            gap: '8px',
+            gap: '16px', // Espacio general entre los elementos
             height: '92vh',
+            padding: '16px', // Agrega un padding general a todo el contenedor
         }}
         >
             {/* Sección de Filtros */}
-            <Box sx={{ backgroundColor: '#333', color: '#fff', padding: '16px' }}>
-                <Typography variant="h5">Filtros</Typography>
+            <Box sx={{ 
+                backgroundColor: theme.palette.background.default,
+                color: theme.palette.text.primary,
+                padding: '16px', 
+                borderRadius: '8px', // Bordes redondeados
+                boxShadow: theme.shadows[3], // Sombra ligera
+                marginBottom: '16px',
+            }}>
+                <Typography variant="h5" sx={{ marginBottom: '24px' }}>Filtros</Typography>
+                
                 <Select
                     name="alertType"
                     value={filters.alertType}
                     onChange={handleFilterChange}
                     fullWidth
-                    sx={{ marginBottom: '16px' }}
+                    sx={{ marginBottom: '24px' }}
                 >
-                    <MenuItem value="all">Todos los Tipos</MenuItem>
-                    <MenuItem value="Precaucion">Precaucion</MenuItem>
-                    <MenuItem value="Urgente">Urgente</MenuItem>
+                    <MenuItem value="">Todos los Tipos</MenuItem>
+                    <MenuItem value="Precaucion PM2.5">Precaucion PM2.5</MenuItem>
+                    <MenuItem value="Urgente PM2.5">Urgente PM2.5</MenuItem>
+                    <MenuItem value="Precaucion PM10">Precaucion PM10</MenuItem>
+                    <MenuItem value="Urgente PM10">Urgente PM10</MenuItem>
                 </Select>
 
                 <TextField
@@ -101,7 +113,7 @@ function GridLayout() {
                     onChange={handleFilterChange}
                     label="Serial ID"
                     fullWidth
-                    sx={{ marginBottom: '16px' }}
+                    sx={{ marginBottom: '24px' }}
                 />
 
                 <TextField
@@ -111,68 +123,69 @@ function GridLayout() {
                     label="Fecha (YYYY-MM-DD)"
                     type="date"
                     fullWidth
-                    sx={{ marginBottom: '16px' }}
+                    sx={{ marginBottom: '24px' }}
                     InputLabelProps={{ shrink: true }}
                 />
 
-                <Button variant="contained" color="primary" fullWidth onClick={applyFilters}>
+                <Button variant="contained" color="primary" fullWidth onClick={applyFilters} sx={{ marginTop: '16px' }}>
                     Aplicar Filtros
                 </Button>
             </Box>
 
-            {/* Segunda caja: ocupa 2 columnas y 5 filas */}
+            {/* Segunda caja: Alertas PM2.5 */}
             <Box
                 sx={{
                     gridColumn: 'span 2 / span 2',
-                    backgroundColor: '#333',
+                    backgroundColor: theme.palette.background.paper,
                     gridRow: 'span 5 / span 5',
                     display: 'flex',
-                    flexDirection: 'column', // Para apilar las alertas verticalmente
-                    gap: '8px', // Espacio entre las alertas
+                    flexDirection: 'column',
+                    gap: '16px',
                     padding: '16px',
-                    color: '#fff',
+                    color: theme.palette.text.primary,
+                    borderRadius: '8px', // Bordes redondeados
+                    boxShadow: theme.shadows[3], // Sombra ligera
                 }}
             >
                 <Typography variant="h5" sx={{ marginBottom: '16px' }}>Alertas PM2.5</Typography>
                 <Grid container spacing={2}>
                     {alertsPM25.map((alert) => (
                         <Grid item xs={12} key={alert.id}>
-                            <Alert severity={getAlertSeverity(alert.alert_type)}>
-                                <Typography variant="h6">{alert.alert_type}</Typography>
-                                <Typography>Valor: {alert.alert_value}</Typography>
-                                <Typography>ID del Sensor: {alert.serialId}</Typography>
-                                <Typography>
-                                    Fecha y Hora: {new Date(alert.timestamp).toLocaleString()}
-                                </Typography>
+                            <Alert severity={getAlertSeverity(alert.alert_type)} sx={{ padding: '8px', borderRadius: '8px' }}>
+                                <Typography variant="h6" sx={{ marginBottom: '8px' }}>{alert.alert_type}</Typography>
+                                <Typography sx={{ marginBottom: '4px' }}>Valor: {alert.alert_value}</Typography>
+                                <Typography sx={{ marginBottom: '4px' }}>ID del Sensor: {alert.serialId}</Typography>
+                                <Typography>Fecha y Hora: {new Date(alert.timestamp).toLocaleString()}</Typography>
                             </Alert>
                         </Grid>
                     ))}
                 </Grid>
             </Box>
 
+            {/* Tercera caja: Alertas PM10 */}
             <Box
                 sx={{
                     gridColumn: '4 / span 2',
                     gridRow: 'span 5 / span 5',
-                    backgroundColor: '#333',
+                    backgroundColor: theme.palette.background.paper,
                     display: 'flex',
-                    flexDirection: 'column', // Para apilar las alertas verticalmente
-                    gap: '8px', // Espacio entre las alertas
+                    flexDirection: 'column',
+                    gap: '16px',
                     padding: '16px',
-                    color: '#fff',
+                    color: theme.palette.text.primary,
+                    borderRadius: '8px', // Bordes redondeados
+                    boxShadow: theme.shadows[3], // Sombra ligera
                 }}
             >
                 <Typography variant="h5" sx={{ marginBottom: '16px' }}>Alertas PM10</Typography>
                 <Grid container spacing={2}>
                     {alertsPM10.map((alert) => (
                         <Grid item xs={12} key={alert.id}>
-                            <Alert severity={getAlertSeverity(alert.alert_type)}>
-                                <Typography variant="h6">{alert.alert_type}</Typography>
-                                <Typography>Valor: {alert.alert_value}</Typography>
-                                <Typography>ID del Sensor: {alert.serialId}</Typography>
-                                <Typography>
-                                    Fecha y Hora: {new Date(alert.timestamp).toLocaleString()}
-                                </Typography>
+                            <Alert severity={getAlertSeverity(alert.alert_type)} sx={{ padding: '8px', borderRadius: '8px' }}>
+                                <Typography variant="h6" sx={{ marginBottom: '8px' }}>{alert.alert_type}</Typography>
+                                <Typography sx={{ marginBottom: '4px' }}>Valor: {alert.alert_value}</Typography>
+                                <Typography sx={{ marginBottom: '4px' }}>ID del Sensor: {alert.serialId}</Typography>
+                                <Typography>Fecha y Hora: {new Date(alert.timestamp).toLocaleString()}</Typography>
                             </Alert>
                         </Grid>
                     ))}

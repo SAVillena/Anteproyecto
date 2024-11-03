@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography, useTheme, Paper } from '@mui/material';
 import ReactECharts from 'echarts-for-react';
 import { fetchData } from '../../services/graphic.service';
 
 function GraphicPage() {
+    const theme = useTheme(); // Accedemos al tema para los colores y el modo
     const [chartData, setChartData] = useState(null);
 
     useEffect(() => {
@@ -14,48 +15,47 @@ function GraphicPage() {
         getData();
     }, []);
 
-
-    if (!chartData) return <p>Cargando datos...</p>;
+    if (!chartData) return <Typography variant="h6" sx={{ padding: 2 }}>Cargando datos...</Typography>;
 
     const { min_ad_2, max_ad_2, avg_ad_2, min_ad_3, max_ad_3, avg_ad_3, data } = chartData.data;
 
     const formatTimestamp = (timestamp) => {
         const date = new Date(timestamp);
-        date.setHours(date.getHours() - 3); // Restar 2 horas
+        date.setHours(date.getHours() - 3); // Ajuste de zona horaria
         return date.toISOString().slice(11, 16); // Formato 'HH:MM'
     };
 
     const getFormattedDate = () => {
         const today = new Date();
-        //Obtener solo la fecha en formato DD-MM-YYYY
-        const date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
-        return date;
+        return today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
     };
 
     const titleStyle = {
         textStyle: {
-            color: '#FF6347', 
-            fontWeight: 'bold', 
-            fontSize: 20, 
+            color: theme.palette.mode === 'dark' ? '#ffffff' : theme.palette.text.primary, // Color dinámico según el modo
+            fontWeight: 'bold',
+            fontSize: 20,
         },
     };
 
- 
     const barOptionsAd2 = {
-        title: { ...titleStyle, text: 'Mínimo, Máximo y Promedio de PM 2.5 '+ getFormattedDate() },
+        title: { ...titleStyle, text: 'Mínimo, Máximo y Promedio de PM 2.5 ' + getFormattedDate() },
         tooltip: {},
         xAxis: { type: 'category', data: ['Mínimo', 'Máximo', 'Promedio'] },
         yAxis: { type: 'value' },
-        series: [{ 
-            type: 'bar', 
+        series: [{
+            type: 'bar',
             data: [min_ad_2, max_ad_2, avg_ad_2],
+            itemStyle: {
+                color: theme.palette.secondary.main,
+            },
             label: {
-                show: true,            
-                position: 'inside',    
-                formatter: ({ value }) => value.toFixed(1),      
-                fontSize: 14,          
-                color: '#fff'          
-            }, 
+                show: true,
+                position: 'inside',
+                formatter: ({ value }) => value.toFixed(1),
+                fontSize: 14,
+                color: theme.palette.text.primary,
+            },
         }],
     };
 
@@ -64,15 +64,18 @@ function GraphicPage() {
         tooltip: {},
         xAxis: { type: 'category', data: ['Mínimo', 'Máximo', 'Promedio'] },
         yAxis: { type: 'value' },
-        series: [{ 
-            type: 'bar', 
-            data: [min_ad_3, max_ad_3, avg_ad_3] ,
+        series: [{
+            type: 'bar',
+            data: [min_ad_3, max_ad_3, avg_ad_3],
+            itemStyle: {
+                color: theme.palette.secondary.main,
+            },
             label: {
-                show: true,            
-                position: 'inside',    
-                formatter: ({ value }) => value.toFixed(1),      
-                fontSize: 14,          
-                color: '#fff'          
+                show: true,
+                position: 'inside',
+                formatter: ({ value }) => value.toFixed(1),
+                fontSize: 14,
+                color: theme.palette.text.primary,
             },
         }],
     };
@@ -83,10 +86,15 @@ function GraphicPage() {
         xAxis: {
             type: 'category',
             data: data.map((item) => formatTimestamp(item.timestamp)),
-            axisLabel: { rotate: 45 }, 
+            axisLabel: { rotate: 45, color: theme.palette.text.primary },
         },
         yAxis: { type: 'value' },
-        series: [{ type: 'line', data: data.map((item) => item.ad_2) }],
+        series: [{
+            type: 'line',
+            data: data.map((item) => item.ad_2),
+            lineStyle: { color: theme.palette.primary.main },
+            itemStyle: { color: theme.palette.primary.main },
+        }],
     };
 
     const lineOptionsAd3 = {
@@ -95,10 +103,15 @@ function GraphicPage() {
         xAxis: {
             type: 'category',
             data: data.map((item) => formatTimestamp(item.timestamp)),
-            axisLabel: { rotate: 45 }, 
+            axisLabel: { rotate: 45, color: theme.palette.text.primary },
         },
         yAxis: { type: 'value' },
-        series: [{ type: 'line', data: data.map((item) => item.ad_3) }],
+        series: [{
+            type: 'line',
+            data: data.map((item) => item.ad_3),
+            lineStyle: { color: theme.palette.primary.main },
+            itemStyle: { color: theme.palette.primary.main },
+        }],
     };
 
     const realTime = {
@@ -116,17 +129,29 @@ function GraphicPage() {
         <Box
             sx={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '16px',
-                padding: '16px',
+                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                gap: 4,
+                padding: 3,
             }}
         >
-            <ReactECharts option={barOptionsAd2} />
-            <ReactECharts option={barOptionsAd3} />
-            <ReactECharts option={lineOptionsAd2} />
-            <ReactECharts option={lineOptionsAd3} />
-            <ReactECharts option={realTime} />
-            <ReactECharts option={realTime} />
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+                <ReactECharts option={barOptionsAd2} />
+            </Paper>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+                <ReactECharts option={barOptionsAd3} />
+            </Paper>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+                <ReactECharts option={lineOptionsAd2} />
+            </Paper>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+                <ReactECharts option={lineOptionsAd3} />
+            </Paper>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+                <ReactECharts option={realTime} />
+            </Paper>
+            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+                <ReactECharts option={realTime} />
+            </Paper>
         </Box>
     );
 }
