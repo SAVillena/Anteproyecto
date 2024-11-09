@@ -3,6 +3,7 @@ import { Box, Typography, useTheme, Paper, CircularProgress, Alert, Button } fro
 import ReactECharts from 'echarts-for-react';
 import { fetchData } from '../../services/graphic.service';
 import { generateBarOptions, generateLineOptions } from '../../config/chartOptions';
+import PDFReport from '../PDFReport/PDFReport';
 
 function GraphicPage() {
     const theme = useTheme();
@@ -54,18 +55,19 @@ function GraphicPage() {
 
     return (
         <Box sx={{ padding: 2 }}>
-        <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold', textAlign: 'center' }}>
-            Análisis de Partículas PM2.5 y PM10
-        </Typography>
-        <Box
-            sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
-                gap: 4,
-                padding: 3,
-            }}
-        >
-            <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
+            <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold', textAlign: 'center' }}>
+                Análisis de Partículas PM2.5 y PM10
+            </Typography>
+            <Box
+                id="chartsContainer"
+                sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                    gap: 4,
+                    padding: 3,
+                }}
+            >
+                <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
                 <ReactECharts option={generateBarOptions(`Mínimo, Máximo y Promedio de PM 2.5 ${getFormattedDate()}`, [min_ad_2, max_ad_2, avg_ad_2], theme)} />
             </Paper>
             <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
@@ -75,10 +77,15 @@ function GraphicPage() {
                 <ReactECharts option={generateLineOptions('Serie Temporal de PM2.5', data, theme, formatTimestamp)} />
             </Paper>
             <Paper elevation={3} sx={{ padding: 3, borderRadius: '8px', backgroundColor: theme.palette.background.paper }}>
-                <ReactECharts option={generateLineOptions('Serie Temporal de PM10', data, theme, formatTimestamp)} />
-            </Paper>
+                    <ReactECharts option={generateLineOptions('Serie Temporal de PM10', data, theme, formatTimestamp)} />
+                </Paper>
+            </Box>
+
+            {/* Botón para Generar PDF */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+                <PDFReport chartData={chartData.data} />
+            </Box>
         </Box>
-    </Box>
     );
 }
 
