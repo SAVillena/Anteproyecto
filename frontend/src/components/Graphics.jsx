@@ -1,59 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { fetchData, fetchGraphicSerieData } from '../services/graphic.service.js';
+import React from 'react';
 import ReactECharts from 'echarts-for-react';
-import images from '../services/image.service.js';
-
-
+import { useTheme } from '@mui/material/styles';
+import { lineChartOptions, barChartOptions } from '../config/chartOptions';
 
 function Graficos() {
-    // Configuración del gráfico
-    const lineal = {
-        tooltip: {
-            trigger: 'axis',
-        },
-        xAxis: {
-            type: 'category',
-            data: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-        },
-        yAxis: {
-            type: 'value',
-        },
-        series: [
-            {
-                name: 'Ventas',
-                type: 'line',
-                data: [120, 200, 150, 80, 70, 110, 130],
-            },
-        ],
-    };
+    const theme = useTheme();
 
-    const a = {
-        tooltip: {
-            trigger: 'axis',
-        },
-        xAxis: {
-            type: 'category',
-            data: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-        },
-        yAxis: {
-            type: 'value',
-        },
-        series: [
-            {
-                name: 'Ventas',
-                type: 'bar',
-                data: [120, 200, 150, 80, 70, 110, 130],
-            },
-        ],
-    };
-
-    return(
+    return (
         <>
-        <ReactECharts option={lineal} />
-        <ReactECharts option={a} />
+            <ReactECharts option={lineChartOptions(theme)} />
+            <ReactECharts option={barChartOptions(theme)} />
         </>
     );
-};
-
+}
 
 export default Graficos;

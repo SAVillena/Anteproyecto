@@ -1,0 +1,8 @@
+/* Ajustar el padding de las celdas y el tamaño de fuente en dispositivos móviles */
+@media (max-width: 768px) {
+    .table td, .table th {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+  

@@ -1,18 +1,58 @@
+/* Asegurarse de que el contenedor tenga un ancho máximo y centrado en pantallas grandes */
 .container {
-    max-width: 800px;
-  }
-  
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Ajustes en la tabla para que sea responsiva */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
   .table td, .table th {
-    vertical-align: middle;
+    font-size: 0.875rem; /* Reducir tamaño de texto en pantallas pequeñas */
   }
-  
-  .btn + .btn {
-    margin-left: 0.5rem;
+}
+
+/* Botones espaciados */
+.btn + .btn {
+  margin-left: 0.5rem;
+}
+
+/* Configuración de la envoltura de gestión de usuarios para que ocupe el espacio necesario */
+.user-management-wrapper {
+  flex: 1;
+  width: 100%;
+  padding: 1rem;
+}
+
+/* Ajuste responsivo para formulario y diálogos */
+.dialog-content {
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .dialog-content {
+    padding: 0.5rem; /* Reducir padding en pantallas más pequeñas */
   }
-  
-  .user-management-wrapper {
-    flex: 1; /* Ocupará el espacio restante disponible */
-    width: 100%;
-    padding: 1rem;
-  }
-  
+}
+
+/* Estilos para mejorar la accesibilidad de botones */
+button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}

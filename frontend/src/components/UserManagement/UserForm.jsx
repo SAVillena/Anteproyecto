@@ -1,27 +1,11 @@
-// UserForm.jsx
 import React, { useState, useEffect } from 'react';
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  Grid,
-  TextField,
-  Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Box,
+  Dialog, DialogTitle, DialogContent, Grid, TextField, Button, Select, MenuItem, FormControl, InputLabel, Box,
 } from '@mui/material';
 
 const UserForm = ({ user, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    rut: '',
-    password: '',
-    newPassword: '',
-    roles: ['user'],
+    username: '', email: '', rut: '', password: '', newPassword: '', roles: ['user'],
   });
 
   useEffect(() => {
@@ -36,59 +20,29 @@ const UserForm = ({ user, onClose, onSubmit }) => {
       });
     } else {
       setFormData({
-        username: '',
-        email: '',
-        rut: '',
-        password: '',
-        newPassword: '',
-        roles: ['user'],
+        username: '', email: '', rut: '', password: '', newPassword: '', roles: ['user'],
       });
     }
   }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'roles') {
-      setFormData({
-        ...formData,
-        roles: [value],
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
-    }
+    setFormData({ ...formData, [name]: name === 'roles' ? [value] : value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const dataToSend = { ...formData };
-    if (!user) {
-      delete dataToSend.newPassword;
-    } else if (!dataToSend.newPassword) {
-      delete dataToSend.newPassword;
-    }
+    if (!user) delete dataToSend.newPassword;
+    else if (!dataToSend.newPassword) delete dataToSend.newPassword;
     onSubmit(dataToSend);
   };
 
   return (
     <Dialog open onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', mb: 2 }}>
-        {user ? 'Editar Usuario' : 'Crear Usuario'}
-      </DialogTitle>
+      <DialogTitle>{user ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
       <DialogContent>
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{
-            mt: 1,
-            padding: 2,
-            borderRadius: '8px',
-            boxShadow: 3,
-            backgroundColor: 'background.paper',
-          }}
-        >
+        <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField

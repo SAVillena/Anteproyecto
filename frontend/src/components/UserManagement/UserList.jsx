@@ -1,4 +1,5 @@
-// UserList.jsx
+// src/components/UserManagement/UserList.jsx
+
 import React from 'react';
 import {
   Table,
@@ -7,59 +8,73 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
+  IconButton,
   Box,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import './UserList.css';
 
 const UserList = ({ users, onEdit, onDelete }) => {
+  // Usamos un media query para detectar dispositivos móviles
+  const isMobile = useMediaQuery('(max-width:768px)');
+
   return (
     <Paper
       sx={{
         marginTop: '2rem',
         padding: '16px',
         borderRadius: '8px',
-        boxShadow: 3, // Agrega sombra al componente
+        boxShadow: 3,
+        overflowX: 'auto', // Para desplazamiento horizontal en móviles
       }}
     >
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell sx={{ fontWeight: 'bold' }}>Nombre de Usuario</TableCell>
+            {/* Mostrar solo las columnas necesarias en dispositivos móviles */}
+            {!isMobile && (
+              <>
+                <TableCell sx={{ fontWeight: 'bold' }}>Nombre de Usuario</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }}>RUT</TableCell>
+              </>
+            )}
             <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>RUT</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Roles</TableCell>
-            <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Rol</TableCell>
+            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Acciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.id} hover>
-              <TableCell>{user.username}</TableCell>
+              {!isMobile && (
+                <>
+                  <TableCell>{user.username}</TableCell>
+                  <TableCell>{user.rut}</TableCell>
+                </>
+              )}
               <TableCell>{user.email}</TableCell>
-              <TableCell>{user.rut}</TableCell>
               <TableCell>{user.Role ? user.Role.name : 'No Roles'}</TableCell>
               <TableCell>
-                <Box sx={{ display: 'flex', gap: '8px' }}>
-                  <Button
-                    variant="contained"
+                <Box sx={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                  {/* Iconos de acción solamente en móviles */}
+                  <IconButton
                     color="warning"
                     size="small"
                     onClick={() => onEdit(user)}
-                    startIcon={<EditIcon />}
+                    aria-label="Editar"
                   >
-                    Editar
-                  </Button>
-                  <Button
-                    variant="contained"
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
                     color="error"
                     size="small"
                     onClick={() => onDelete(user)}
-                    startIcon={<DeleteIcon />}
+                    aria-label="Eliminar"
                   >
-                    Eliminar
-                  </Button>
+                    <DeleteIcon />
+                  </IconButton>
                 </Box>
               </TableCell>
             </TableRow>

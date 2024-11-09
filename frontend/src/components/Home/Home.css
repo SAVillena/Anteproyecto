@@ -1,65 +1,16 @@
-/* .home-container {
-    display: flex;
-    flex-direction: column;
-    height: 94vh;
-    color: black;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f8f8f8;
-    border-bottom: 1px solid #ddd;
-}
-
-.logo, .menu, .user {
-    padding: 10px;
-}
-
-.main-content {
-    display: flex;
-    flex: 1;
-}
-
-.sidebar {
-    width: 200px;
-    background-color: #f1f1f1;
-    padding: 20px;
-    border-right: 1px solid #ddd;
-}
-
-.content {
-    display: flex;
-    flex: 1;
-    padding: 20px;
-}
-
-.left-pane {
-    flex: 1;
-    background-color: #e8e8e8;
-    margin-right: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-.right-pane {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.graphics {
-    flex: 1;
-    background-color: #d8d8d8;
-    margin-bottom: 20px;
-    padding: 20px;
-}
-
-.alerts {
-    flex: 1;
-    background-color: #c8c8c8;
-    padding: 20px;
-} */
+/* Ajuste de padding y fuente para dispositivos móviles */
+@media (max-width: 768px) {
+    .MuiTypography-h6 {
+      font-size: 1.25rem;
+    }
+  
+    .MuiPaper-root {
+      padding: 1rem;
+    }
+    
+    .MuiFab-root {
+      width: 48px;
+      height: 48px;
+    }
+  }
+  

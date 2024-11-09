@@ -90,6 +90,7 @@ function GridLayout() {
                 borderRadius: '8px', // Bordes redondeados
                 boxShadow: theme.shadows[3], // Sombra ligera
                 marginBottom: '16px',
+                border: '1px solid cyan',
             }}>
                 <Typography variant="h5" sx={{ marginBottom: '24px' }}>Filtros</Typography>
                 
@@ -145,6 +146,7 @@ function GridLayout() {
                     color: theme.palette.text.primary,
                     borderRadius: '8px', // Bordes redondeados
                     boxShadow: theme.shadows[3], // Sombra ligera
+                    border: '1px solid cyan',
                 }}
             >
                 <Typography variant="h5" sx={{ marginBottom: '16px' }}>Alertas PM2.5</Typography>
@@ -175,6 +177,7 @@ function GridLayout() {
                     color: theme.palette.text.primary,
                     borderRadius: '8px', // Bordes redondeados
                     boxShadow: theme.shadows[3], // Sombra ligera
+                    border: '1px solid cyan',
                 }}
             >
                 <Typography variant="h5" sx={{ marginBottom: '16px' }}>Alertas PM10</Typography>

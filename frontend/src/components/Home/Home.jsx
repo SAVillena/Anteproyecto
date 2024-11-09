@@ -1,88 +1,114 @@
+// src/components/Home.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Box, Grid, Paper, Typography, Fab, Badge } from '@mui/material';
 import EmbeddedPage from '../iframe';
 import Filtros from '../Filters';
 import Graficos from '../Graphics';
 import Alerta from '../Alert';
-import Dwr from '../DrawerManagement/Drawer';
+import Drawer from '../DrawerManagement/Drawer';
 import CamionIcon from '../../images/camion.png';
 import { obtenerCamiones } from '../../services/truck.service';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import './Home.css';
 
-function Home() {
-    const [mostrarGraficos, setMostrarGraficos] = useState(false);
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const [cantidadCamiones, setCamiones] = useState([]);
-    const [hayAlerta, setHayAlerta] = useState(false);
+const Home = () => {
+    const [showGraphs, setShowGraphs] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [trucks, setTrucks] = useState([]);
+    const [hasAlert, setHasAlert] = useState(false);
+    const isMobile = useMediaQuery('(max-width:768px)'); // Detectar si es un dispositivo móvil
 
-    const manejarFiltrosAplicados = () => {
-        setMostrarGraficos(true);
+    const fetchTrucks = async () => {
+        try {
+            const data = await obtenerCamiones();
+            setTrucks(data);
+            checkAlerts(data);
+        } catch (error) {
+            console.error('Error fetching trucks:', error);
+        }
     };
 
     useEffect(() => {
-        const fetchCamiones = async () => {
-            const datos = await obtenerCamiones();
-            setCamiones(datos);
-            verificarAlerta(datos);
-        };
-        fetchCamiones();
+        fetchTrucks();
     }, []);
 
     const toggleDrawer = (open) => () => {
-        setDrawerOpen(open);
+        setIsDrawerOpen(open);
     };
 
-    const verificarAlerta = (camiones) => {
-        const alerta = camiones.some((camion) => camion.porcentajeAgua <= 10);
-        setHayAlerta(alerta);
+    const checkAlerts = (trucks) => {
+        const alert = trucks.some((truck) => truck.porcentajeAgua <= 10);
+        setHasAlert(alert);
     };
+
+    const manejarFiltrosAplicados = (filtros) => {
+        console.log('Filtros aplicados:', filtros);
+        
+    };    
 
     return (
         <Box sx={{ height: '90vh', display: 'flex', flexDirection: 'column', padding: 2, gap: 2 }}>
-            <Box sx={{ width: '100%', display: 'flex', flexGrow: 1, gap: 2 }}>
-                <Box
-                    component="aside"
-                    sx={{
-                        width: '20%',
-                        padding: 2,
-                        overflow: 'auto',
-                    }}
-                >
-                    <Paper elevation={3} sx={{ height: '99%', padding: 3, borderRadius: '12px', border: '1px solid cyan' }}>
-                        <Typography variant="h6" sx={{ marginBottom: 2 }}>Filtros</Typography>
-                        <Filtros onAplicarFiltros={manejarFiltrosAplicados} />
+            {isMobile ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Paper
+                        elevation={3}
+                        sx={{
+                            padding: 2,
+                            borderRadius: '12px',
+                            border: '1px solid cyan',
+                            height: '39vh', // Ocupa al menos la mitad de la pantalla
+                        }}
+                    >
+                        <EmbeddedPage />
+                    </Paper>
+                    <Paper elevation={3} sx={{ padding: 2, borderRadius: '12px', border: '1px solid cyan' }}>
+                        <Typography variant="h6" sx={{ marginBottom: 2 }}>Gráficos</Typography>
+                        {showGraphs && <Graficos />}
+                    </Paper>
+                    <Paper elevation={3} sx={{ padding: 2, borderRadius: '12px', border: '1px solid cyan' }}>
+                        <Typography variant="h6" sx={{ marginBottom: 2 }}>Alertas</Typography>
+                        <Alerta />
                     </Paper>
                 </Box>
+            ) : (
+                <Box sx={{ width: '100%', display: 'flex', gap: 2 }}>
+                    {/* Vista de escritorio: Se muestran todos los componentes, incluido Filtros */}
+                    <Box component="aside" sx={{ width: '20%', padding: 2, overflow: 'auto' }}>
+                        <Paper elevation={3} sx={{ height: '99%', padding: 3, borderRadius: '12px', border: '1px solid cyan' }}>
+                            <Typography variant="h6" sx={{ marginBottom: 2 }}>Filtros</Typography>
+                            <Filtros onAplicarFiltros={manejarFiltrosAplicados} />
 
-                {/* Citysense */}
-                <Box sx={{ width: '80%', padding: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Grid container spacing={2} sx={{ height: '100%' }}>
-                        <Grid item xs={12} md={8} sx={{ height: '90vh' }}>
-                            <Paper elevation={3} sx={{ height: '100%', overflow: 'hidden', borderRadius: '12px', border: '1px solid cyan' }}>
-                                <EmbeddedPage />
-                            </Paper>
+                        </Paper>
+                    </Box>
+                    <Box sx={{ width: '80%', padding: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Grid container spacing={2} sx={{ height: '100%' }}>
+                            <Grid item xs={12} md={8} sx={{ height: '90vh' }}>
+                                <Paper elevation={3} sx={{ height: '100%', overflow: 'hidden', borderRadius: '12px', border: '1px solid cyan' }}>
+                                    <EmbeddedPage />
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={4} sx={{ height: '90vh', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
+                                    <Typography variant="h6" sx={{ marginBottom: 2 }}>Gráficos</Typography>
+                                    {showGraphs && <Graficos />}
+                                </Paper>
+                                <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
+                                    <Typography variant="h6" sx={{ marginBottom: 2 }}>Alertas</Typography>
+                                    <Alerta />
+                                </Paper>
+                            </Grid>
                         </Grid>
-                        {/* Gráficos */}
-                        <Grid item xs={12} md={4} sx={{ height: '90vh', display: 'flex', flexDirection: 'column', gap: 2 }}>
-                            <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
-                                <Typography variant="h6" sx={{ marginBottom: 2 }}>Gráficos</Typography>
-                                {mostrarGraficos && <Graficos />}
-                            </Paper>
-                            {/* alertas */}
-                            <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
-                                <Typography variant="h6" sx={{ marginBottom: 2 }}>Alertas</Typography>
-                                <Alerta />
-                            </Paper>
-                        </Grid>
-                    </Grid>
+                    </Box>
                 </Box>
-            </Box>
-            {/* Botón flotante en la esquina inferior derecha */}
+            )}
+
             <Fab
                 color="primary"
                 aria-label="chat"
                 onClick={() => {
                     toggleDrawer(true)();
-                    setHayAlerta(false);
+                    setHasAlert(false);
                 }}
                 sx={{
                     position: 'fixed',
@@ -98,7 +124,7 @@ function Home() {
                 <Badge
                     color="error"
                     variant="dot"
-                    invisible={!hayAlerta}
+                    invisible={!hasAlert}
                     overlap="circular"
                     anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                     sx={{
@@ -120,14 +146,9 @@ function Home() {
                 />
             </Fab>
 
-            {/* Drawer desde archivo externo */}
-            <Dwr
-                open={drawerOpen}
-                onClose={toggleDrawer(false)}
-                camiones={cantidadCamiones}
-            />
+            <Drawer open={isDrawerOpen} onClose={toggleDrawer(false)} camiones={trucks} />
         </Box>
     );
-}
+};
 
 export default Home;
