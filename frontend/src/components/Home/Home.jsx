@@ -11,12 +11,15 @@ import CamionIcon from '../../images/camion.png';
 import { obtenerCamiones } from '../../services/truck.service';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import './Home.css';
+import { fetchFilteredData } from '../../services/graphic.service';
 
 const Home = () => {
-    const [showGraphs, setShowGraphs] = useState(false);
+    const [chartData, setChartData] = useState(null);
+    const [filtros, setFiltros] = useState({});
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [trucks, setTrucks] = useState([]);
     const [hasAlert, setHasAlert] = useState(false);
+    const [showGraphs, setShowGraphs] = useState(false);
     const isMobile = useMediaQuery('(max-width:768px)'); // Detectar si es un dispositivo móvil
 
     const fetchTrucks = async () => {
@@ -42,9 +45,16 @@ const Home = () => {
         setHasAlert(alert);
     };
 
-    const manejarFiltrosAplicados = (filtros) => {
-        console.log('Filtros aplicados:', filtros);
-        
+    const manejarFiltrosAplicados = async (filtros) => {
+        try {
+            const data = await fetchFilteredData(filtros);
+            // Procesar los datos para mostrarlos en el gráfico
+            setChartData(data);
+            setShowGraphs(true);
+            setFiltros(filtros);
+        } catch (error) {
+            console.error('Error al aplicar filtros:', error);
+        }
     };    
 
     return (
@@ -91,7 +101,7 @@ const Home = () => {
                             <Grid item xs={12} md={4} sx={{ height: '90vh', display: 'flex', flexDirection: 'column', gap: 2 }}>
                                 <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
                                     <Typography variant="h6" sx={{ marginBottom: 2 }}>Gráficos</Typography>
-                                    {showGraphs && <Graficos />}
+                                    {chartData && <Graficos data={chartData} filter={filtros} />}
                                 </Paper>
                                 <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
                                     <Typography variant="h6" sx={{ marginBottom: 2 }}>Alertas</Typography>

@@ -1,131 +1,106 @@
-// import React from 'react';
-
-// function Filtros({ onAplicarFiltros }) {
-//     const manejarEnvio = (evento) => {
-//         evento.preventDefault(); // Evitar recarga de la página
-//         onAplicarFiltros(); // Llamar a la función pasada desde Home.jsx
-//     };
-
-//     return (
-//         <>
-//         <form onSubmit={manejarEnvio}>
-//             <label htmlFor="fecha">Fecha:</label>
-//             <input type="date" id="fecha" name="fecha" />
-
-//             <label htmlFor="hora">Hora:</label>
-//             <input type="time" id="hora" name="hora" />
-
-//             <label htmlFor="sensor">Sensor:</label>
-//             <select id="sensor" name="sensor">
-//                 <option value="sensor1">Sensor 1</option>
-//                 <option value="sensor2">Sensor 2</option>
-//                 <option value="sensor3">Sensor 3</option>
-//             </select>
-
-//             <label htmlFor="metrica">Métrica:</label>
-//             <select id="metrica" name="metrica">
-//                 <option value="pm2.5">PM2.5</option>
-//                 <option value="pm10">PM10</option>
-//             </select>
-
-//             <button type="submit">Filtrar</button>
-//         </form>
-//         </>
-
-//     );
-// }
-
-// export default Filtros;
-
 import React, { useState } from 'react';
-import { 
-    Box, 
-    MenuItem, 
-    Select, 
-    FormControl, 
-    InputLabel, 
-    Button, 
-    TextField 
+import {
+    Box,
+    MenuItem,
+    Select,
+    FormControl,
+    InputLabel,
+    Button,
+    TextField
 } from '@mui/material';
 
 function Filtros({ onAplicarFiltros }) {
     const [filtroSeleccionado, setFiltroSeleccionado] = useState('');
-    const [fecha, setFecha] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [sensor, setSensor] = useState('');
+    const [metrica, setMetrica] = useState('');
 
     const manejarEnvio = (evento) => {
         evento.preventDefault();
-        onAplicarFiltros();
+        // Solo envía los valores del filtro seleccionado
+        const filtros = {};
+        if (filtroSeleccionado === 'fecha') {
+            filtros.startDate = startDate;
+            filtros.endDate = endDate;
+        } else if (filtroSeleccionado === 'sensor') {
+            filtros.sensor = sensor;
+        } else if (filtroSeleccionado === 'metrica') {
+            filtros.metric = metrica;
+        }
+        onAplicarFiltros(filtros);
     };
 
     const handleSelectChange = (e) => {
-        setFiltroSeleccionado(e.target.value);
+        const selectedFilter = e.target.value;
+        setFiltroSeleccionado(selectedFilter);
+
+        // Limpia los otros filtros al cambiar el filtro principal
+        setStartDate('');
+        setEndDate('');
+        setSensor('');
+        setMetrica('');
     };
 
-    const handleFechaChange = (e) => {
-        setFecha(e.target.value);
-    };
+    const handleStartDateChange = (e) => setStartDate(e.target.value);
+    const handleEndDateChange = (e) => setEndDate(e.target.value);
+    const handleSensorChange = (e) => setSensor(e.target.value);
+    const handleMetricaChange = (e) => setMetrica(e.target.value);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <Box sx={{ flex: 1, padding: 2 }}>
-                <form
-                    onSubmit={manejarEnvio}
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '16px',
-                        alignItems: 'flex-start',
-                    }}
-                >
+                <form onSubmit={manejarEnvio} style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}>
                     <FormControl fullWidth>
                         <InputLabel id="filtro-label">Selecciona un filtro</InputLabel>
-                        <Select
-                            labelId="filtro-label"
-                            value={filtroSeleccionado}
-                            onChange={handleSelectChange}
-                        >
+                        <Select labelId="filtro-label" value={filtroSeleccionado} onChange={handleSelectChange}>
                             <MenuItem value="fecha">Fecha</MenuItem>
                             <MenuItem value="sensor">Sensor</MenuItem>
                             <MenuItem value="metrica">Métrica</MenuItem>
                         </Select>
                     </FormControl>
 
-                    {/* Render Condicional según el Filtro Seleccionado */}
                     {filtroSeleccionado === 'fecha' && (
-                        <TextField
-                            id="fechaInput"
-                            label="Selecciona Fecha"
-                            type="date"
-                            value={fecha}
-                            onChange={handleFechaChange}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            fullWidth
-                        />
+                        <>
+                            <TextField
+                                label="Fecha Inicio"
+                                type="date"
+                                value={startDate}
+                                onChange={handleStartDateChange}
+                                InputLabelProps={{ shrink: true }}
+                                fullWidth
+                            />
+                            <TextField
+                                label="Fecha Fin"
+                                type="date"
+                                value={endDate}
+                                onChange={handleEndDateChange}
+                                InputLabelProps={{ shrink: true }}
+                                fullWidth
+                            />
+                        </>
                     )}
-
                     {filtroSeleccionado === 'sensor' && (
                         <FormControl fullWidth>
-                            <InputLabel htmlFor="sensorInput">Sensor</InputLabel>
-                            <Select id="sensorInput" name="sensor">
-                                <MenuItem value="sensor1">Sensor 1</MenuItem>
-                                <MenuItem value="sensor2">Sensor 2</MenuItem>
-                                <MenuItem value="sensor3">Sensor 3</MenuItem>
-                            </Select>
+                            <InputLabel htmlFor="sensorInput"></InputLabel>
+                            <TextField
+                                id="sensor"
+                                label="Ingrese la ID del sensor"
+                                variant="filled"
+                                value={sensor} // Vincula el valor al estado sensorId
+                                onChange={handleSensorChange} // Actualiza el estado con el valor ingresado
+                            />
                         </FormControl>
                     )}
-
                     {filtroSeleccionado === 'metrica' && (
                         <FormControl fullWidth>
                             <InputLabel htmlFor="metricaInput">Métrica</InputLabel>
-                            <Select id="metricaInput" name="metrica">
-                                <MenuItem value="pm2.5">PM2.5</MenuItem>
-                                <MenuItem value="pm10">PM10</MenuItem>
+                            <Select id="metricaInput" value={metrica} onChange={handleMetricaChange}>
+                                <MenuItem value="PM2.5">PM2.5</MenuItem>
+                                <MenuItem value="PM10">PM10</MenuItem>
                             </Select>
                         </FormControl>
                     )}
-
                     <Button type="submit" variant="contained" sx={{ alignSelf: 'center' }}>
                         Filtrar
                     </Button>

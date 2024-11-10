@@ -43,48 +43,7 @@ export const generateLineOptions = (title, seriesData, theme, formatTimestamp) =
     series: [{
         type: 'line',
         data: seriesData.map((item) => item.ad_2),
-        lineStyle: { color: theme.palette.primary.main },
+        lineStyle: { color: 'FF5733' },
         itemStyle: { color: theme.palette.primary.main },
     }],
-});
-
-export const lineChartOptions = (theme) => ({
-    tooltip: {
-        trigger: 'axis',
-    },
-    xAxis: {
-        type: 'category',
-        data: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-    },
-    yAxis: {
-        type: 'value',
-    },
-    series: [
-        {
-            name: 'Ventas',
-            type: 'line',
-            data: [120, 200, 150, 80, 70, 110, 130],
-            lineStyle: { color: theme.palette.primary.main },
-            itemStyle: { color: theme.palette.primary.main },
-        },
-    ],
-});
-
-export const barChartOptions = (theme) => ({
-    tooltip: {
-        trigger: 'axis',
-    },
-    xAxis: {
-        type: 'category',
-        data: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-    },
-    yAxis: { type: 'value' },
-    series: [
-        {
-            name: 'Ventas',
-            type: 'bar',
-            data: [120, 200, 150, 80, 70, 110, 130],
-            itemStyle: { color: theme.palette.secondary.main },
-        },
-    ],
 });

@@ -75,13 +75,13 @@ async function getDataSerie(req, res) {
 
 async function getFilterData(req, res) {
   try {
-    const [filteredData, errorData] = await DataService.getFilterData(req.body);
-    if (errorData) return respondError(req, res, 404, errorData);
-
-    respondSuccess(req, res, 200, filteredData);
+    console.log("estoy en el controlador");
+      const filters = req.query;
+      const [filteredData, errorData] = await DataService.getFilterData(filters);
+      if (errorData) return res.status(404).json({ error: errorData });
+      res.status(200).json(filteredData);
   } catch (error) {
-    handleError(error, "data.controller -> getFilterData");
-    respondError(req, res, 400, error.message);
+      res.status(400).json({ error: error.message });
   }
 }
 

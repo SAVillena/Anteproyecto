@@ -157,25 +157,40 @@ async function getDataSerie() {
 
 async function getFilterData(filter) {
     try {
-        const { lat, lng, ad_2, ad_3, startDate, endDate } = filter;
+        const { startDate, endDate, sensor, metric } = filter;
         const where = {};
 
-        if (lat) where.lat = lat;
-        if (lng) where.lng = lng;
-        if (ad_2) where.ad_2 = ad_2;
-        if (ad_3) where.ad_3 = ad_3;
-
-        // Filtro por rango de fechas
         if (startDate && endDate) {
+            console.log('Fechas:', startDate, endDate);
             where.timestamp = {
                 [Op.between]: [new Date(startDate), new Date(endDate)],
             };
         }
 
-        // Realiza la búsqueda en la base de datos
-        const filteredData = await Data.findAll({ where });
+        if (sensor) {
+            console.log('Sensor:', sensor);
+            where.serialId = sensor;
+        }
 
-        return filteredData;
+        if (metric) {
+            console.log('Metrica:', metric);
+            if (metric === 'PM2.5') {
+                where.ad_2 = {
+                    [Op.not]: null,
+                };
+            } else if (metric === 'PM10') {
+                where.ad_3 = {
+                    [Op.not]: null,
+                };
+            }
+        }
+
+        const filteredData = await Data.findAll({
+            where,
+            raw: true
+        });
+
+        return [filteredData, null];
     } catch (error) {
         console.error('Error al filtrar:', error);
         return [null, error];
