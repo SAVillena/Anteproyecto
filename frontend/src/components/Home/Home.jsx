@@ -1,7 +1,7 @@
 // src/components/Home.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Box, Grid, Paper, Typography, Fab, Badge } from '@mui/material';
+import { Box, Grid, Paper, Typography, Fab, Badge, Snackbar } from '@mui/material';
 import EmbeddedPage from '../iframe';
 import Filtros from '../Filters';
 import Graficos from '../Graphics';
@@ -12,6 +12,10 @@ import { obtenerCamiones } from '../../services/truck.service';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import './Home.css';
 import { fetchFilteredData } from '../../services/graphic.service';
+import { fetchLatestAlerts } from '../../services/alert.service';
+import MuiAlert from '@mui/material/Alert';
+
+const alertSound = new Audio('/alerta.mp3');
 
 const Home = () => {
     const [chartData, setChartData] = useState(null);
@@ -21,6 +25,36 @@ const Home = () => {
     const [hasAlert, setHasAlert] = useState(false);
     const [showGraphs, setShowGraphs] = useState(false);
     const isMobile = useMediaQuery('(max-width:768px)'); // Detectar si es un dispositivo móvil
+    const [alertas, setAlertas] = useState([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+
+    const obtenerAlertasRecientes = async () => {
+        try {
+            const response = await fetchLatestAlerts();
+            const nuevasAlertas = response.data;
+
+            // Verifica si hay nuevas alertas comparando con el primer elemento
+            if (alertas.length === 0 || nuevasAlertas[0].id !== alertas[0].id) {
+                setAlertas(nuevasAlertas);
+                setOpenSnackbar(true); // Muestra el snackbar
+                alertSound.play();
+            }
+        } catch (error) {
+            console.error('Error al obtener las alertas:', error);
+        }
+    };
+
+    useEffect(() => {
+        // Configura el polling cada 5 segundos
+        const intervalId = setInterval(obtenerAlertasRecientes, 5000);
+
+        return () => clearInterval(intervalId); // Limpia el intervalo al desmontar el componente
+    }, [alertas]);
+
+    const handleSnackbarClose = () => {
+        setOpenSnackbar(false);
+    };
+
 
     const fetchTrucks = async () => {
         try {
@@ -55,7 +89,7 @@ const Home = () => {
         } catch (error) {
             console.error('Error al aplicar filtros:', error);
         }
-    };    
+    };
 
     return (
         <Box sx={{ height: '90vh', display: 'flex', flexDirection: 'column', padding: 2, gap: 2 }}>
@@ -105,8 +139,13 @@ const Home = () => {
                                 </Paper>
                                 <Paper elevation={3} sx={{ flex: 1, padding: 3, borderRadius: '12px', display: 'flex', flexDirection: 'column', border: '1px solid cyan' }}>
                                     <Typography variant="h6" sx={{ marginBottom: 2 }}>Alertas</Typography>
-                                    <Alerta />
+                                    <Alerta alertas={alertas}/>
                                 </Paper>
+                                <Snackbar anchorOrigin={{vertical: 'top', horizontal: 'right'}} open={openSnackbar} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                                    <MuiAlert onClose={handleSnackbarClose} severity="info">
+                                        Nueva alerta recibida
+                                    </MuiAlert>
+                                </Snackbar>
                             </Grid>
                         </Grid>
                     </Box>

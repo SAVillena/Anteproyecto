@@ -54,8 +54,26 @@ async function deleteAlert(req, res) {
   }
 }
 
+/**
+* Obtiene las últimas 5 alertas
+* @param {Object} req - Objeto de petición
+* @param {Object} res - Objeto de respuesta
+*/
+async function getLatestAlerts(req, res) {
+  try {
+      const [alerts, errorAlerts] = await AlertService.getLatestAlerts();
+      if (errorAlerts) return respondError(req, res, 404, errorAlerts);
+
+      respondSuccess(req, res, 200, alerts);
+  } catch (error) {
+      handleError(error, "alert.controller -> getLatestAlerts");
+      respondError(req, res, 400, error.message);
+  }
+}
+
 export default{ 
   getAlerts,
   createAlert,
-  deleteAlert 
+  deleteAlert,
+  getLatestAlerts
 };

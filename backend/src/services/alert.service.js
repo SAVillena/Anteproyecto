@@ -1,7 +1,4 @@
 import Alert from '../models/alert.model.js';
-import Data from '../models/data.model.js';
-import Serial from '../models/serial.model.js';
-import { Sequelize, Op } from 'sequelize';
 
 /**
  * @async
@@ -48,8 +45,28 @@ async function deleteAlert(alertInput) {
     }
 }
 
-export default { 
-    getAlerts, 
-    createAlert, 
-    deleteAlert 
+/**
+ * @async
+ * @function getLatestAlerts
+ * @returns {Promise<[Object[]|null, Error|null]>}
+ */
+async function getLatestAlerts() {
+    try {
+        const latestAlerts = await Alert.findAll({
+            limit: 5,
+            order: [['timestamp', 'DESC']]
+        });
+        return [latestAlerts, null];
+    } catch (error) {
+        console.error('Error al obtener las últimas alertas: ', error);
+        return [null, error];
+    }
+}
+
+
+export default {
+    getAlerts,
+    createAlert,
+    deleteAlert,
+    getLatestAlerts
 };
