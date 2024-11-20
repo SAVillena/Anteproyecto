@@ -63,10 +63,54 @@ async function getLatestAlerts() {
     }
 }
 
+async function getFilterAlert(filter) {
+    try {
+        const { alertType, serialId, dateFrom, dateTo } = filter;
+        const whereClause = {};
+
+        // Filtro por tipo de alerta
+        if (alertType && alertType !== "Ambos") {
+            whereClause.alert_type = alertType;
+        }
+
+        // Filtro por serialId
+        if (serialId) whereClause.serialId = serialId;
+
+        // Filtro por rango de fechas
+        if (dateFrom && dateTo) {
+            whereClause.timestamp = {
+                [Op.between]: [new Date(dateFrom), new Date(dateTo)],
+            };
+        } else if (dateFrom) {
+            whereClause.timestamp = {
+                [Op.gte]: new Date(dateFrom),
+            };
+        } else if (dateTo) {
+            whereClause.timestamp = {
+                [Op.lte]: new Date(dateTo),
+            };
+        }
+
+        // Consulta a la base de datos
+        const filteredAlerts = await Alert.findAll({
+            where: whereClause,
+            order: [['timestamp', 'DESC']],
+        });
+
+        return [filteredAlerts, null];
+    } catch (error) {
+        console.error('Error al filtrar las alertas:', error);
+        return [null, error];
+    }
+}
+
+
+
 
 export default {
     getAlerts,
     createAlert,
     deleteAlert,
-    getLatestAlerts
+    getLatestAlerts,
+    getFilterAlert
 };

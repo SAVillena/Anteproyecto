@@ -71,9 +71,29 @@ async function getLatestAlerts(req, res) {
   }
 }
 
+/**
+* Obtiene las últimas 5 alertas
+* @param {Object} req - Objeto de petición
+* @param {Object} res - Objeto de respuesta
+*/
+async function getFilterAlert(req, res) {
+  try {
+      const filters = req.query;
+      const [alerts, errorAlerts] = await AlertService.getFilterAlert(filters);
+
+      if (errorAlerts) return respondError(req, res, 404, errorAlerts);
+      respondSuccess(req, res, 200, alerts);
+  } catch (error) {
+      handleError(error, "alert.controller -> getFilterAlert");
+      respondError(req, res, 400, error.message);
+  }
+}
+
+
 export default{ 
   getAlerts,
   createAlert,
   deleteAlert,
-  getLatestAlerts
+  getLatestAlerts,
+  getFilterAlert
 };

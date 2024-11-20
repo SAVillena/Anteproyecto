@@ -12,3 +12,20 @@ export const fetchLatestAlerts = async () => {
         throw error;
     }
 };
+
+export const fetchFilteredAlerts = async (filters) => {
+    console.log("Filtros: ", filters);
+    try {
+        const response = await axios.get('/alert/filtered', {
+            params: filters,
+        });
+        const { status, data } = response;
+
+        if (status === 200) {
+            return data;
+        }
+    } catch (error) {
+        console.error('Error al obtener alertas filtradas:', error);
+        throw error;
+    }
+};

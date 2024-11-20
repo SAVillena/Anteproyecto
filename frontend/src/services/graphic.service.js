@@ -32,10 +32,8 @@ export const fetchGraphicSerieData = async () => {
 
 export const fetchFilteredData = async (filters) => {
   try {
-    console.log('Estoy en el servicio');
-    console.log(filters);
     const response = await axios.get('data/getFilterData', {
-      params: filters, // Enviar filtros como parámetros de consulta
+      params: filters,
     });
     const { status, data } = response;
     if (status === 200) {
