@@ -1,6 +1,7 @@
 import React, { createContext, useState, useMemo, useEffect } from 'react';
 import { createMyTheme } from '../theme/theme';
 import { ThemeProvider } from '@mui/material/styles';
+import GlobalStyles from '../theme/GlobalStyles'; // Importa los estilos globales
 
 export const ThemeModeContext = createContext();
 
@@ -21,6 +22,7 @@ export const ThemeModeProvider = ({ children }) => {
   return (
     <ThemeModeContext.Provider value={{ mode, toggleTheme }}>
       <ThemeProvider theme={theme}>
+        <GlobalStyles theme={theme} /> 
         {children}
       </ThemeProvider>
     </ThemeModeContext.Provider>
