@@ -76,26 +76,34 @@ function GridLayout() {
     const alertsPM10 = filteredAlerts.filter(alert => alert.alert_type.includes('PM10'));
 
     return (
-        <Box sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
-            gridTemplateRows: 'repeat(5, 1fr)',
-            gap: '16px', // Espacio general entre los elementos
-            height: '92vh',
-            padding: '16px', // Agrega un padding general a todo el contenedor
-        }}>
-            {/* Sección de Filtros */}
-            <Box sx={{
-                backgroundColor: theme.palette.background.default,
-                color: theme.palette.text.primary,
+        <Box
+            sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: 'repeat(5, 1fr)' }, // Una columna en móviles, diseño original en escritorio
+                gridTemplateRows: { xs: 'auto', md: 'repeat(5, 1fr)' },
+                gap: '16px',
+                height: { xs: 'auto', md: '92vh' }, // Altura automática en móviles
                 padding: '16px',
-                borderRadius: '8px', // Bordes redondeados
-                boxShadow: theme.shadows[3], // Sombra ligera
-                marginBottom: '16px',
-                border: '1px solid cyan',
-            }}>
-                <Typography variant="h5" sx={{ marginBottom: '24px' }}>Filtros</Typography>
-                <Typography variant="h6" sx={{ marginBottom: '8px' }}>Filtrar por:</Typography>
+            }}
+        >
+            {/* Sección de Filtros */}
+            <Box
+                sx={{
+                    gridColumn: { xs: '1 / span 1', md: 'span 1 / span 1' },
+                    backgroundColor: theme.palette.background.default,
+                    color: theme.palette.text.primary,
+                    padding: '16px',
+                    borderRadius: '8px',
+                    boxShadow: theme.shadows[3],
+                    border: '1px solid cyan',
+                }}
+            >
+                <Typography variant="h5" sx={{ marginBottom: '24px', fontSize: { xs: '18px', md: '24px' } }}>
+                    Filtros
+                </Typography>
+                <Typography variant="h6" sx={{ marginBottom: '8px', fontSize: { xs: '16px', md: '20px' } }}>
+                    Filtrar por:
+                </Typography>
                 <Select
                     name="alertType"
                     value={filters.alertType}
@@ -137,28 +145,34 @@ function GridLayout() {
                 </Button>
             </Box>
 
-            {/* Segunda caja: Alertas PM2.5 */}
-            <Box sx={{
-                gridColumn: 'span 2 / span 2',
-                backgroundColor: theme.palette.background.paper,
-                gridRow: 'span 5 / span 5',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                padding: '16px',
-                color: theme.palette.text.primary,
-                borderRadius: '8px', // Bordes redondeados
-                boxShadow: theme.shadows[3], // Sombra ligera
-                border: '1px solid cyan',
-                overflowY: 'auto',
-                maxHeight: '100%',
-            }}>
-                <Typography variant="h5" sx={{ marginBottom: '16px' }}>Alertas PM2.5</Typography>
+            {/* Alertas PM2.5 */}
+            <Box
+                sx={{
+                    gridColumn: { xs: '1 / span 1', md: 'span 2 / span 2' },
+                    gridRow: { xs: 'auto', md: 'span 5 / span 5' },
+                    backgroundColor: theme.palette.background.paper,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    padding: '16px',
+                    color: theme.palette.text.primary,
+                    borderRadius: '8px',
+                    boxShadow: theme.shadows[3],
+                    border: '1px solid cyan',
+                    overflowY: 'auto',
+                    maxHeight: { xs: 'auto', md: '100%' },
+                }}
+            >
+                <Typography variant="h5" sx={{ marginBottom: '16px', fontSize: { xs: '18px', md: '24px' } }}>
+                    Alertas PM2.5
+                </Typography>
                 <Grid container spacing={2}>
                     {alertsPM25.map((alert) => (
                         <Grid item xs={12} key={alert.id}>
                             <Alert severity={getAlertSeverity(alert.alert_type)} sx={{ padding: '8px', borderRadius: '8px' }}>
-                                <Typography variant="h6" sx={{ marginBottom: '8px' }}>{alert.alert_type}</Typography>
+                                <Typography variant="h6" sx={{ marginBottom: '8px', fontSize: { xs: '16px', md: '20px' } }}>
+                                    {alert.alert_type}
+                                </Typography>
                                 <Typography sx={{ marginBottom: '4px' }}>Valor: {alert.alert_value}</Typography>
                                 <Typography sx={{ marginBottom: '4px' }}>ID del Sensor: {alert.serialId}</Typography>
                                 <Typography>Fecha y Hora: {new Date(alert.timestamp).toLocaleString()}</Typography>
@@ -168,28 +182,34 @@ function GridLayout() {
                 </Grid>
             </Box>
 
-            {/* Tercera caja: Alertas PM10 */}
-            <Box sx={{
-                gridColumn: '4 / span 2',
-                gridRow: 'span 5 / span 5',
-                backgroundColor: theme.palette.background.paper,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                padding: '16px',
-                color: theme.palette.text.primary,
-                borderRadius: '8px', // Bordes redondeados
-                boxShadow: theme.shadows[3], // Sombra ligera
-                border: '1px solid cyan',
-                overflowY: 'auto',
-                maxHeight: '100%',
-            }}>
-                <Typography variant="h5" sx={{ marginBottom: '16px' }}>Alertas PM10</Typography>
+            {/* Alertas PM10 */}
+            <Box
+                sx={{
+                    gridColumn: { xs: '1 / span 1', md: '4 / span 2' },
+                    gridRow: { xs: 'auto', md: 'span 5 / span 5' },
+                    backgroundColor: theme.palette.background.paper,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    padding: '16px',
+                    color: theme.palette.text.primary,
+                    borderRadius: '8px',
+                    boxShadow: theme.shadows[3],
+                    border: '1px solid cyan',
+                    overflowY: 'auto',
+                    maxHeight: { xs: 'auto', md: '100%' },
+                }}
+            >
+                <Typography variant="h5" sx={{ marginBottom: '16px', fontSize: { xs: '18px', md: '24px' } }}>
+                    Alertas PM10
+                </Typography>
                 <Grid container spacing={2}>
                     {alertsPM10.map((alert) => (
                         <Grid item xs={12} key={alert.id}>
                             <Alert severity={getAlertSeverity(alert.alert_type)} sx={{ padding: '8px', borderRadius: '8px' }}>
-                                <Typography variant="h6" sx={{ marginBottom: '8px' }}>{alert.alert_type}</Typography>
+                                <Typography variant="h6" sx={{ marginBottom: '8px', fontSize: { xs: '16px', md: '20px' } }}>
+                                    {alert.alert_type}
+                                </Typography>
                                 <Typography sx={{ marginBottom: '4px' }}>Valor: {alert.alert_value}</Typography>
                                 <Typography sx={{ marginBottom: '4px' }}>ID del Sensor: {alert.serialId}</Typography>
                                 <Typography>Fecha y Hora: {new Date(alert.timestamp).toLocaleString()}</Typography>
