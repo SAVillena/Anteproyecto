@@ -15,17 +15,18 @@ const userBodySchema = Joi.object({
   }),
   rut: Joi.string()
     .required()
-    .min(9)
-    .max(10)
-    .pattern(/^[0-9]+[-|‐]{1}[0-9kK]{1}$/)
+    .min(11)
+    .max(12)
+    .pattern(/^(\d{1,2})\.?(\d{3})\.?(\d{3})-?([\dkK])$/)
     .messages({
       "string.empty": "El rut no puede estar vacío.",
       "any.required": "El rut es obligatorio.",
       "string.base": "El rut debe ser de tipo string.",
-      "string.min": "El rut debe tener al menos 9 caracteres.",
-      "string.max": "El rut debe tener un máximo de 10 caracteres.",
-      "string.pattern.base": "El rut tiene el formato XXXXXXXX-X, ejemplo: 12345678-9.",
+      "string.min": "El rut debe tener al menos 11 caracteres (con puntos y guion).",
+      "string.max": "El rut debe tener un máximo de 12 caracteres (con puntos y guion).",
+      "string.pattern.base": "El rut tiene el formato XX.XXX.XXX-X, ejemplo: 12.345.678-9.",
     }),
+
   password: Joi.string().required().min(5).messages({
     "string.empty": "La contraseña no puede estar vacía.",
     "any.required": "La contraseña es obligatoria.",

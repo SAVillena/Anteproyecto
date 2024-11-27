@@ -49,20 +49,18 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // Define the 'rut' column
     rut: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      // Esta validacion creo que hay que quitarla
       validate: {
         is: {
-          args: /^(\d{7,8})-([\dkK])$/,
-          msg: "El rut no es válido",
+          args: /^(\d{1,2})\.?(\d{3})\.?(\d{3})-?([\dkK])$/,
+          msg: "El rut debe tener el formato XX.XXX.XXX-X, ejemplo: 12.345.678-9",
         },
       },
     },
-    // Define the 'role' column
-
   },
   {
     sequelize,
@@ -70,18 +68,21 @@ User.init(
     hooks: {
       beforeCreate: async (user, options) => {
         try {
-        if (user.password) {
-          user.password = await bcrypt.genSalt(10).then((salt) => bcrypt.hash(user.password, salt));
-        }
+          if (user.password) {
+            user.password = await bcrypt
+              .genSalt(10)
+              .then((salt) => bcrypt.hash(user.password, salt));
+          }
         } catch (error) {
-          console.error("Error hashing password(beforeCreate): ", error);
+          console.error("Error hashing password (beforeCreate): ", error);
         }
       },
       beforeUpdate: async (user, options) => {
         try {
           if (user.changed("password")) {
-            user.password = await bcrypt.genSalt(10).then((salt) => 
-              bcrypt.hash(user.password, salt));
+            user.password = await bcrypt
+              .genSalt(10)
+              .then((salt) => bcrypt.hash(user.password, salt));
           }
         } catch (error) {
           console.error("Error hashing password (beforeUpdate): ", error);

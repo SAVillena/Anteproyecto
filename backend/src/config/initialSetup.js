@@ -24,7 +24,7 @@ async function createRoles() {
     ]);
     console.log("* => Roles creados exitosamente");
   } catch (error) {
-    console.error('Error al crear roles: ', error);
+    console.error("Error al crear roles: ", error);
   }
 }
 
@@ -49,21 +49,21 @@ async function createUsers() {
       {
         username: "user",
         email: "user@email.com",
-        rut: "12345678-9",
+        rut: "12.345.678-9",
         password: await bcrypt.hash("user123", 10),
         roleId: userRole.id,
       },
       {
         username: "admin",
         email: "admin@email.com",
-        rut: "98765432-1",
+        rut: "98.765.432-1",
         password: await bcrypt.hash("admin123", 10),
         roleId: adminRole.id,
       },
     ]);
     console.log("* => Users creados exitosamente");
   } catch (error) {
-    console.error('Error al crear usuarios: ', error);
+    console.error("Error al crear usuarios: ", error);
   }
 }
 
