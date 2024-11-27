@@ -10,8 +10,12 @@ export const useAuth = () => useContext(AuthContext);
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem('user')) || '';
-  const isAuthenticated = user ? true : false;
+  // Recupera el usuario almacenado en localStorage
+  const user = JSON.parse(localStorage.getItem('user')) || null;
+  const isAuthenticated = Boolean(user);
+
+  // Función para verificar si el usuario tiene un rol específico
+  const hasRole = (role) => user?.roles === role;
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -20,7 +24,7 @@ export function AuthProvider({ children }) {
   }, [isAuthenticated, navigate]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

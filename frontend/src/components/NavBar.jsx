@@ -45,10 +45,13 @@ const Navbar = () => {
         <ListItemIcon><BarChartIcon /></ListItemIcon>
         <ListItemText primary="Gráficos" />
       </ListItem>
-      <ListItem button onClick={() => { navigate('/users'); setMobileOpen(false); }}>
-        <ListItemIcon><PeopleIcon /></ListItemIcon>
-        <ListItemText primary="Usuarios" />
-      </ListItem>
+      {/* Opción visible solo para administradores */}
+      {user?.roles === 'admin' && (
+        <ListItem button onClick={() => { navigate('/users'); setMobileOpen(false); }}>
+          <ListItemIcon><PeopleIcon /></ListItemIcon>
+          <ListItemText primary="Usuarios" />
+        </ListItem>
+      )}
     </List>
   );
 
@@ -75,7 +78,7 @@ const Navbar = () => {
               alt="Logo"
               style={{
                 height: 40,
-                marginLeft: { xs: 'auto', sm: 0 }, // Centrando en móviles
+                marginLeft: { xs: 'auto', sm: 0 },
                 marginRight: 16
               }}
             />
@@ -86,7 +89,10 @@ const Navbar = () => {
             <Button color="inherit" startIcon={<HomeIcon />} onClick={() => navigate('/home')}>Inicio</Button>
             <Button color="inherit" startIcon={<NotificationsIcon />} onClick={() => navigate('/alerts')}>Alertas</Button>
             <Button color="inherit" startIcon={<BarChartIcon />} onClick={() => navigate('/graphics')}>Gráficos</Button>
-            <Button color="inherit" startIcon={<PeopleIcon />} onClick={() => navigate('/users')}>Usuarios</Button>
+            {/* Opción visible solo para administradores */}
+            {user?.roles === 'admin' && (
+              <Button color="inherit" startIcon={<PeopleIcon />} onClick={() => navigate('/users')}>Usuarios</Button>
+            )}
           </Box>
 
           {/* Botón para cambiar de tema y cerrar sesión */}

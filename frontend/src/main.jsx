@@ -12,8 +12,10 @@ import UserManagement from './components/UserManagement/UserManagement.jsx';
 import GraphicRoute from './routes/GraphicRoute.jsx';
 import AlertRoute from './routes/AlertRoute.jsx';
 
+import ProtectedRoute from './routes/ProtectedRoute';
 import { ThemeModeProvider } from './context/ThemeContext';
 import CssBaseline from '@mui/material/CssBaseline';
+import UnauthorizedPage from './routes/UnauthorizedPage';
 
 const router = createBrowserRouter([
   {
@@ -31,7 +33,10 @@ const router = createBrowserRouter([
       },
       {
         path: '/users',
-        element: <UserManagement />,
+        element:   <ProtectedRoute requiredRole="admin">
+          <UserManagement />,
+        </ProtectedRoute>
+        
       },
       {
         path: '/graphics',
@@ -47,6 +52,10 @@ const router = createBrowserRouter([
     path: '/auth',
     element: <Login />,
   },
+  {
+    path: '/unauthorized',
+    element: <UnauthorizedPage />,
+  }  
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
