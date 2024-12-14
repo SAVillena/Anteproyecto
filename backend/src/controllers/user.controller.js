@@ -32,9 +32,23 @@ async function getUsers(req, res) {
 async function createUser(req, res) {
   try {
     const { body } = req;
-    const { error: bodyError } = userBodySchema.validate(body);
-    if (bodyError) return respondError(req, res, 400, bodyError.message);
-    console.log("body: ", body);
+     const { error: bodyError } = userBodySchema.validate(body, { allowUnknown: false });
+
+     if (bodyError) {
+       const errorMessage = bodyError.details.map((detail) => {
+         // Traduce dinámicamente los mensajes genéricos
+         if (detail.type === "object.unknown") {
+           return `El campo "${detail.context.key}" no está permitido.`;
+         }
+         return detail.message; 
+       }).join("; "); 
+ 
+       return res.status(400).json({
+         state: "Error",
+         message: `Error de validación: ${errorMessage}`,
+       });
+     }
+ 
     const [newUser, userError] = await UserService.createUser(body);
 
     if (userError) return respondError(req, res, 400, userError);

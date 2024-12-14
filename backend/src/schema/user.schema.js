@@ -81,6 +81,8 @@ const userIdSchema = Joi.object({
       "number.positive": "El ID debe ser un número positivo.",
       "any.required": "El ID es obligatorio.",
     }),
-}).unknown(false); // No permite propiedades adicionales.
-
+  })
+  .unknown(false).messages({
+    "object.unknown": "El campo {#label} no está permitido en la solicitud.", // Mensaje personalizado
+  });
 export { userBodySchema, userIdSchema };
