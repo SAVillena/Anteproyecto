@@ -2,6 +2,8 @@ import Data from '../models/data.model.js';
 import Serial from '../models/serial.model.js';
 import { Sequelize, Op } from 'sequelize';
 import Alert from './alert.service.js'
+import moment from 'moment-timezone';
+
 /**
  * @async
  * @function getData
@@ -157,8 +159,50 @@ async function getDataSerie() {
 
 async function getFilterData(filter) {
     try {
-        const { startDate, endDate, sensor, metric } = filter;
+        console.log('Filtro:', filter);
+        const { startDate, endDate, sensor, metric, real } = filter;
         const where = {};
+
+        // Definir zona horaria
+        const timeZone = 'America/Santiago';
+
+        // Validaciones de fechas
+        if (startDate || endDate) {
+
+            if (startDate && endDate) {
+                if (moment(startDate).isAfter(moment(endDate))) {
+                    throw new Error('La fecha de inicio no puede ser mayor que la fecha de término.');
+                }
+            }
+
+            if (endDate) {
+                // Obtener la fecha actual en la zona horaria específica
+                const currentDateNormalized = moment().tz(timeZone).startOf('day'); // Inicio del día actual
+                const endDateMoment = moment(endDate).tz(timeZone).startOf('day'); // Inicio del día de término
+                console.log('Fecha actual normalizada:', currentDateNormalized.format());
+                console.log('Fecha de término normalizada:', endDateMoment.format());
+            
+                // Comparar solo las fechas normalizadas
+                if (endDateMoment.isAfter(currentDateNormalized)) {
+                    throw new Error('La fecha de término no puede ser mayor que el día actual.');
+                }
+            }
+            
+
+            if (startDate) {
+                const startYear = moment(startDate).year();
+                if (startYear <= 2010) {
+                    throw new Error('La fecha de inicio debe ser posterior al año 2010.');
+                }
+            }
+
+            if (endDate) {
+                const endYear = moment(endDate).year();
+                if (endYear <= 2010) {
+                    throw new Error('La fecha de término debe ser posterior al año 2010.');
+                }
+            }
+        }
 
         if (startDate && endDate) {
             console.log('Fechas:', startDate, endDate);
@@ -173,7 +217,7 @@ async function getFilterData(filter) {
         }
 
         if (metric) {
-            console.log('Metrica:', metric);
+            console.log('Métrica:', metric);
             if (metric === 'PM2.5') {
                 where.ad_2 = {
                     [Op.not]: null,
@@ -185,6 +229,33 @@ async function getFilterData(filter) {
             }
         }
 
+        if (real) {
+            console.log('Filtrando por tiempo real');
+            const currentTime = moment().tz(timeZone);
+            const fifteenMinutesAgo = currentTime.clone().subtract(15, 'minutes');
+
+            console.log('Últimos 15 minutos:', fifteenMinutesAgo.format(), currentTime.format());
+            where.timestamp = {
+                [Op.between]: [fifteenMinutesAgo.toDate(), currentTime.toDate()],
+            };
+
+            if (real === 'realPM2.5') {
+                console.log('Filtrando por realPM2.5');
+                where.ad_2 = {
+                    [Op.not]: null,
+                };
+            }
+
+            if (real === 'realPM10') {
+                console.log('Filtrando por realPM10');
+                where.ad_3 = {
+                    [Op.not]: null,
+                };
+            }
+        }
+
+        console.log('Where:', where);
+
         const filteredData = await Data.findAll({
             where,
             raw: true
@@ -192,10 +263,11 @@ async function getFilterData(filter) {
 
         return [filteredData, null];
     } catch (error) {
-        console.error('Error al filtrar:', error);
-        return [null, error];
+        console.error('Error al filtrar:', error.message);
+        return [null, error.message];
     }
 };
+
 
 
 export default {

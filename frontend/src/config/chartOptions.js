@@ -47,3 +47,117 @@ export const generateLineOptions = (title, seriesData, theme, formatTimestamp) =
         itemStyle: { color: theme.palette.primary.main },
     }],
 });
+
+export const generateRealTimeLinePM25Options = (title, seriesData, theme) => ({
+    title: {
+        text: title,
+        textStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+            color: theme.palette.mode === 'dark' ? '#ffffff' : theme.palette.text.primary,
+        },
+    },
+    tooltip: {
+        trigger: 'axis',
+        formatter: (params) => {
+            const point = params[0];
+            const date = new Date(seriesData[params[0].dataIndex].timestamp); // Obtener el timestamp correspondiente
+            const time = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            return `Tiempo: ${time}<br />Valor: ${point.value.toFixed(2)}`;
+        },
+    },
+    xAxis: {
+        type: 'category',
+        data: seriesData.map((item) => {
+            const date = new Date(item.timestamp);
+            const hours = date.getHours();
+            const minutes = date.getMinutes().toString().padStart(2, '0'); // Asegurar que siempre tenga dos dígitos
+            return `${hours}:${minutes}`; // Mostrar hora:minutos en el eje X
+        }),
+        axisLabel: {
+            rotate: 0, // Mantén las etiquetas sin rotación
+            color: theme.palette.text.primary,
+        },
+        boundaryGap: false,
+    },
+    yAxis: {
+        type: 'value',
+        axisLabel: {
+            color: theme.palette.text.primary,
+        },
+    },
+    series: [{
+        type: 'line',
+        data: seriesData.map((item) => item.ad_2), 
+        lineStyle: {
+            color: theme.palette.primary.main, 
+            width: 2,
+        },
+        itemStyle: {
+            color: theme.palette.primary.main, 
+        },
+        areaStyle: { 
+            color: theme.palette.primary.light,
+            opacity: 0.3,
+        },
+    }],
+});
+
+
+
+
+
+export const generateRealTimeLinePM10Options = (title, seriesData, theme) => ({
+    title: {
+        text: title,
+        textStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+            color: theme.palette.mode === 'dark' ? '#ffffff' : theme.palette.text.primary,
+        },
+    },
+    tooltip: {
+        trigger: 'axis',
+        formatter: (params) => {
+            const point = params[0];
+            const date = new Date(seriesData[point.dataIndex].timestamp); // Obtener el timestamp correspondiente
+            const time = `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            return `Tiempo: ${time}<br />Valor: ${point.value.toFixed(2)}`;
+        },
+    },
+    xAxis: {
+        type: 'category',
+        data: seriesData.map((item) => {
+            const date = new Date(item.timestamp);
+            const hours = date.getHours();
+            const minutes = date.getMinutes().toString().padStart(2, '0'); // Asegurar que siempre tenga dos dígitos
+            return `${hours}:${minutes}`; // Mostrar hora:minutos en el eje X
+        }),
+        axisLabel: {
+            rotate: 0, // Mantén las etiquetas sin rotación
+            color: theme.palette.text.primary,
+        },
+        boundaryGap: false,
+    },
+    yAxis: {
+        type: 'value',
+        axisLabel: {
+            color: theme.palette.text.primary,
+        },
+    },
+    series: [{
+        type: 'line',
+        data: seriesData.map((item) => item.ad_3), 
+        lineStyle: {
+            color: theme.palette.primary.main, 
+            width: 2,
+        },
+        itemStyle: {
+            color: theme.palette.primary.main, 
+        },
+        areaStyle: { 
+            color: theme.palette.primary.light,
+            opacity: 0.3,
+        },
+    }],
+});

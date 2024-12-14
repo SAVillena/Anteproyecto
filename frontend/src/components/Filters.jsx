@@ -6,7 +6,8 @@ import {
     FormControl,
     InputLabel,
     Button,
-    TextField
+    TextField,
+    Menu
 } from '@mui/material';
 
 function Filtros({ onAplicarFiltros }) {
@@ -15,21 +16,26 @@ function Filtros({ onAplicarFiltros }) {
     const [endDate, setEndDate] = useState('');
     const [sensor, setSensor] = useState('');
     const [metrica, setMetrica] = useState('');
+    const [real, setReal] = useState('');
 
     const manejarEnvio = (evento) => {
-        evento.preventDefault();
-        // Solo envía los valores del filtro seleccionado
-        const filtros = {};
-        if (filtroSeleccionado === 'fecha') {
-            filtros.startDate = startDate;
-            filtros.endDate = endDate;
-        } else if (filtroSeleccionado === 'sensor') {
-            filtros.sensor = sensor;
-        } else if (filtroSeleccionado === 'metrica') {
-            filtros.metric = metrica;
-        }
-        onAplicarFiltros(filtros);
-    };
+    evento.preventDefault();
+    // Solo envía los valores del filtro seleccionado
+    const filtros = {};
+    if (filtroSeleccionado === 'fecha') {
+        // Asignar horas a las fechas seleccionadas
+        filtros.startDate = `${startDate}T00:00:00`; // Inicio del día
+        filtros.endDate = `${endDate}T23:59:59`; // Fin del día
+    } else if (filtroSeleccionado === 'sensor') {
+        filtros.sensor = sensor;
+    } else if (filtroSeleccionado === 'metrica') {
+        filtros.metric = metrica;
+    } else if (filtroSeleccionado === 'tiempo_real') {
+        filtros.real = real;
+    }
+    onAplicarFiltros(filtros);
+};
+
 
     const handleSelectChange = (e) => {
         const selectedFilter = e.target.value;
@@ -40,12 +46,14 @@ function Filtros({ onAplicarFiltros }) {
         setEndDate('');
         setSensor('');
         setMetrica('');
+        setReal('');
     };
 
     const handleStartDateChange = (e) => setStartDate(e.target.value);
     const handleEndDateChange = (e) => setEndDate(e.target.value);
     const handleSensorChange = (e) => setSensor(e.target.value);
     const handleMetricaChange = (e) => setMetrica(e.target.value);
+    const handleRealChange = (e) => setReal(e.target.value);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -57,6 +65,7 @@ function Filtros({ onAplicarFiltros }) {
                             <MenuItem value="fecha">Fecha</MenuItem>
                             <MenuItem value="sensor">Sensor</MenuItem>
                             <MenuItem value="metrica">Métrica</MenuItem>
+                            <MenuItem value="tiempo_real">Tiempo Real</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -98,6 +107,15 @@ function Filtros({ onAplicarFiltros }) {
                             <Select id="metricaInput" value={metrica} onChange={handleMetricaChange}>
                                 <MenuItem value="PM2.5">PM2.5</MenuItem>
                                 <MenuItem value="PM10">PM10</MenuItem>
+                            </Select>
+                        </FormControl>
+                    )}
+                    {filtroSeleccionado === 'tiempo_real' && (
+                        <FormControl fullWidth>
+                            <InputLabel htmlFor="realInput">Tiempo Real</InputLabel>
+                            <Select id="realInput" value={real} onChange={handleRealChange}>
+                                <MenuItem value="realPM10">PM10</MenuItem>
+                                <MenuItem value="realPM2.5">PM2.5</MenuItem>
                             </Select>
                         </FormControl>
                     )}

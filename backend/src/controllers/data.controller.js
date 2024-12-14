@@ -75,7 +75,6 @@ async function getDataSerie(req, res) {
 
 async function getFilterData(req, res) {
   try {
-    console.log("estoy en el controlador");
       const filters = req.query;
       const [filteredData, errorData] = await DataService.getFilterData(filters);
       if (errorData) return res.status(404).json({ error: errorData });

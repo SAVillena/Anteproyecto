@@ -78,6 +78,8 @@ async function getLatestAlerts(req, res) {
 */
 async function getFilterAlert(req, res) {
   try {
+      console.log("Filtros recibidos:", req.query); // Depuración
+
       const filters = req.query;
       const [alerts, errorAlerts] = await AlertService.getFilterAlert(filters);
 
@@ -88,6 +90,7 @@ async function getFilterAlert(req, res) {
       respondError(req, res, 400, error.message);
   }
 }
+
 
 
 export default{ 

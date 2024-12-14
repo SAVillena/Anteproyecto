@@ -1,5 +1,5 @@
 import Alert from '../models/alert.model.js';
-
+import { Sequelize, Op } from 'sequelize';
 /**
  * @async
  * @function getAlerts

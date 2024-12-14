@@ -40,8 +40,16 @@ function GridLayout() {
             return;
         }
 
+        // Agregar horas a las fechas
+        const dateFromWithTime = filters.dateFrom ? `${filters.dateFrom}T00:00:00` : null;
+        const dateToWithTime = filters.dateTo ? `${filters.dateTo}T23:59:59` : null;
+
         try {
-            const response = await fetchFilteredAlerts(filters);
+            const response = await fetchFilteredAlerts({
+                ...filters,
+                dateFrom: dateFromWithTime,
+                dateTo: dateToWithTime,
+            });
             console.log('Datos devueltos por fetchFilteredAlerts:', response);
 
             // Aseguramos que se extrae solo el array de alertas de la respuesta
