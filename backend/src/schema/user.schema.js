@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 "use strict";
 
 import Joi from "joi";
@@ -8,37 +9,52 @@ import ROLES from "../constants/roles.constants.js";
  * @constant {Object}
  */
 const userBodySchema = Joi.object({
-  username: Joi.string().required().messages({
-    "string.empty": "El nombre de usuario no puede estar vacío.",
-    "any.required": "El nombre de usuario es obligatorio.",
-    "string.base": "El nombre de usuario debe ser de tipo string.",
-  }),
-  rut: Joi.string()
+  username: Joi.string()
+    .trim()
+    .pattern(/^[a-zA-Z0-9_.-]{3,30}$/) // Solo permite letras, números, guiones y puntos.
     .required()
-    .min(11)
-    .max(12)
+    .messages({
+      "string.empty": "El nombre de usuario no puede estar vacío.",
+      "any.required": "El nombre de usuario es obligatorio.",
+      "string.base": "El nombre de usuario debe ser de tipo string.",
+      "string.pattern.base": "El nombre de usuario solo puede contener letras, números, guiones y puntos, con una longitud de 3 a 30 caracteres.",
+    }),
+  rut: Joi.string()
+    .trim()
+    .required()
     .pattern(/^(\d{1,2})\.?(\d{3})\.?(\d{3})-?([\dkK])$/)
     .messages({
-      "string.empty": "El rut no puede estar vacío.",
-      "any.required": "El rut es obligatorio.",
-      "string.base": "El rut debe ser de tipo string.",
-      "string.min": "El rut debe tener al menos 11 caracteres (con puntos y guion).",
-      "string.max": "El rut debe tener un máximo de 12 caracteres (con puntos y guion).",
-      "string.pattern.base": "El rut tiene el formato XX.XXX.XXX-X, ejemplo: 12.345.678-9.",
+      "string.empty": "El RUT no puede estar vacío.",
+      "any.required": "El RUT es obligatorio.",
+      "string.base": "El RUT debe ser de tipo string.",
+      "string.pattern.base": "El RUT debe tener el formato XX.XXX.XXX-X, ejemplo: 12.345.678-9.",
     }),
 
-  password: Joi.string().required().min(5).messages({
-    "string.empty": "La contraseña no puede estar vacía.",
-    "any.required": "La contraseña es obligatoria.",
-    "string.base": "La contraseña debe ser de tipo string.",
-    "string.min": "La contraseña debe tener al menos 5 caracteres.",
-  }),
-  email: Joi.string().email().required().messages({
-    "string.empty": "El email no puede estar vacío.",
-    "any.required": "El email es obligatorio.",
-    "string.base": "El email debe ser de tipo string.",
-    "string.email": "El email debe tener un formato válido.",
-  }),
+  password: Joi.string()
+    .trim()
+    .min(5)
+    .pattern(/^[^\s'";]*$/) // Prohíbe espacios y caracteres peligrosos en la contraseña.
+    .required()
+    .messages({
+      "string.empty": "La contraseña no puede estar vacía.",
+      "any.required": "La contraseña es obligatoria.",
+      "string.base": "La contraseña debe ser de tipo string.",
+      "string.min": "La contraseña debe tener al menos 5 caracteres.",
+      "string.pattern.base": "La contraseña contiene caracteres no permitidos.",
+    }),
+
+  email: Joi.string()
+    .trim()
+    .email()
+    .pattern(/^[^\s'"%;<>]*$/) // Prohíbe caracteres peligrosos en el email.
+    .required()
+    .messages({
+      "string.empty": "El email no puede estar vacío.",
+      "any.required": "El email es obligatorio.",
+      "string.base": "El email debe ser de tipo string.",
+      "string.email": "El email debe tener un formato válido.",
+      "string.pattern.base": "El email contiene caracteres no permitidos.",
+    }),
   roles: Joi.array()
     .items(Joi.string().valid(...ROLES))
     .required()
@@ -48,26 +64,23 @@ const userBodySchema = Joi.object({
       "string.base": "El rol debe ser de tipo string.",
       "any.only": "El rol proporcionado no es válido.",
     }),
-  newPassword: Joi.string().min(5).messages({
-    "string.empty": "La contraseña no puede estar vacía.",
-    "string.base": "La contraseña debe ser de tipo string.",
-    "string.min": "La contraseña debe tener al menos 5 caracteres.",
-  }),
-}).messages({
-  "object.unknown": "No se permiten propiedades adicionales.",
-});
+}).unknown(false); // No permite propiedades adicionales.
 
 /**
  * Esquema de validación para el id de usuario.
  * @constant {Object}
  */
 const userIdSchema = Joi.object({
-  id: Joi.number().integer().positive().required().messages({
-    "number.base": "El id debe ser un número entero.",
-    "number.integer": "El id debe ser un número entero.",
-    "number.positive": "El id debe ser un número positivo.",
-    "any.required": "El id es obligatorio.",
-  }),
-});
+  id: Joi.number()
+    .integer()
+    .positive()
+    .required()
+    .messages({
+      "number.base": "El ID debe ser un número entero.",
+      "number.integer": "El ID debe ser un número entero.",
+      "number.positive": "El ID debe ser un número positivo.",
+      "any.required": "El ID es obligatorio.",
+    }),
+}).unknown(false); // No permite propiedades adicionales.
 
 export { userBodySchema, userIdSchema };
