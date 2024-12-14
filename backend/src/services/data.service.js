@@ -78,7 +78,7 @@ async function createData(dataInput) {
 
         // Crear el nuevo registro en la tabla Data
         const createdData = await Data.create(dataToInsert);
-        
+
 
         // Calcular el próximo ID de datos una sola vez
         const nextDataId = (await Data.max('id'));
@@ -159,52 +159,78 @@ async function getDataSerie() {
 
 async function getFilterData(filter) {
     try {
-        console.log('Filtro:', filter);
-        const { startDate, endDate, sensor, metric, real } = filter;
+        console.log('Filtro recibido:', filter);
+        const { startDate, endDate, sensor, metric, real, ...unknownFilters } = filter;
         const where = {};
-
-        // Definir zona horaria
         const timeZone = 'America/Santiago';
 
-        // Validaciones de fechas
-        if (startDate || endDate) {
+        if (startDate === '' || endDate === '') {
+            throw new Error('startDate y endDate no pueden ser vacíos.');
+        }
+        // Validar si existen filtros desconocidos
+        if (Object.keys(unknownFilters).length > 0) {
+            throw new Error(`Filtros desconocidos detectados: ${Object.keys(unknownFilters).join(', ')}`);
+        }
 
-            if (startDate && endDate) {
-                if (moment(startDate).isAfter(moment(endDate))) {
-                    throw new Error('La fecha de inicio no puede ser mayor que la fecha de término.');
-                }
+        // Validar métricas permitidas
+        const validMetrics = ['PM2.5', 'PM10'];
+        if (metric && !validMetrics.includes(metric)) {
+            throw new Error(`La métrica '${metric}' no es válida. Métricas permitidas: ${validMetrics.join(', ')}`);
+        }
+
+        // Validar formato de fechas
+        if (startDate && !moment(startDate, 'YYYY-MM-DD', true).isValid()) {
+            throw new Error(`La fecha de inicio '${startDate}' no tiene un formato válido (YYYY-MM-DD).`);
+        }
+        if (endDate && !moment(endDate, 'YYYY-MM-DD', true).isValid()) {
+            throw new Error(`La fecha de término '${endDate}' no tiene un formato válido (YYYY-MM-DD).`);
+        }
+
+        // Validar combinación de filtros
+        if (real && (startDate || endDate)) {
+            throw new Error('No puedes usar filtros de tiempo real junto con fechas de inicio o término.');
+        }
+
+        if (endDate) {
+            // Obtener la fecha actual en la zona horaria específica
+            const currentDateNormalized = moment().tz(timeZone).startOf('day'); // Inicio del día actual
+            const endDateMoment = moment(endDate).tz(timeZone).startOf('day'); // Inicio del día de término
+            console.log('Fecha actual normalizada:', currentDateNormalized.format());
+            console.log('Fecha de término normalizada:', endDateMoment.format());
+
+            // Comparar solo las fechas normalizadas
+            if (endDateMoment.isAfter(currentDateNormalized)) {
+                throw new Error('La fecha de término no puede ser mayor que el día actual.');
             }
+        }
 
-            if (endDate) {
-                // Obtener la fecha actual en la zona horaria específica
-                const currentDateNormalized = moment().tz(timeZone).startOf('day'); // Inicio del día actual
-                const endDateMoment = moment(endDate).tz(timeZone).startOf('day'); // Inicio del día de término
-                console.log('Fecha actual normalizada:', currentDateNormalized.format());
-                console.log('Fecha de término normalizada:', endDateMoment.format());
-            
-                // Comparar solo las fechas normalizadas
-                if (endDateMoment.isAfter(currentDateNormalized)) {
-                    throw new Error('La fecha de término no puede ser mayor que el día actual.');
-                }
+        if (startDate) {
+            const startYear = moment(startDate).year();
+            if (startYear <= 2010) {
+                throw new Error('La fecha de inicio debe ser posterior al año 2010.');
             }
-            
-
-            if (startDate) {
-                const startYear = moment(startDate).year();
-                if (startYear <= 2010) {
-                    throw new Error('La fecha de inicio debe ser posterior al año 2010.');
-                }
+            if (moment(startDate).isAfter(moment())) {
+                throw new Error('La fecha de inicio no puede ser mayor que la fecha actual.');
             }
+        }
 
-            if (endDate) {
-                const endYear = moment(endDate).year();
-                if (endYear <= 2010) {
-                    throw new Error('La fecha de término debe ser posterior al año 2010.');
-                }
+        if (endDate) {
+            const endYear = moment(endDate).year();
+            if (endYear <= 2010) {
+                throw new Error('La fecha de término debe ser posterior al año 2010.');
+            }
+            if (moment(endDate).isAfter(moment())) {
+                throw new Error('La fecha de término no puede ser mayor que la fecha actual.');
             }
         }
 
         if (startDate && endDate) {
+            if (startDate && endDate && moment(startDate).isAfter(moment(endDate))) {
+                throw new Error('La fecha de inicio no puede ser mayor que la fecha de término.');
+            }
+            if (!startDate || !endDate) {
+                throw new Error('Debe ingresar fecha de inicio y fecha de término');
+            }
             console.log('Fechas:', startDate, endDate);
             where.timestamp = {
                 [Op.between]: [new Date(startDate), new Date(endDate)],
@@ -212,12 +238,16 @@ async function getFilterData(filter) {
         }
 
         if (sensor) {
+            const sensorExists = await Serial.findOne({ where: { id: sensor } });
+            if (!sensorExists) {
+                throw new Error(`El sensor con ID '${sensor}' no está disponible en la base de datos.`);
+            }
             console.log('Sensor:', sensor);
             where.serialId = sensor;
         }
 
         if (metric) {
-            console.log('Métrica:', metric);
+            console.log('Metrica:', metric);
             if (metric === 'PM2.5') {
                 where.ad_2 = {
                     [Op.not]: null,
@@ -229,36 +259,12 @@ async function getFilterData(filter) {
             }
         }
 
-        if (real) {
-            console.log('Filtrando por tiempo real');
-            const currentTime = moment().tz(timeZone);
-            const fifteenMinutesAgo = currentTime.clone().subtract(15, 'minutes');
-
-            console.log('Últimos 15 minutos:', fifteenMinutesAgo.format(), currentTime.format());
-            where.timestamp = {
-                [Op.between]: [fifteenMinutesAgo.toDate(), currentTime.toDate()],
-            };
-
-            if (real === 'realPM2.5') {
-                console.log('Filtrando por realPM2.5');
-                where.ad_2 = {
-                    [Op.not]: null,
-                };
-            }
-
-            if (real === 'realPM10') {
-                console.log('Filtrando por realPM10');
-                where.ad_3 = {
-                    [Op.not]: null,
-                };
-            }
-        }
-
+        // Agregar lógica de validaciones previas y consultas
         console.log('Where:', where);
 
         const filteredData = await Data.findAll({
             where,
-            raw: true
+            raw: true,
         });
 
         return [filteredData, null];
@@ -267,6 +273,7 @@ async function getFilterData(filter) {
         return [null, error.message];
     }
 };
+
 
 
 
